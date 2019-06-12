@@ -6,7 +6,7 @@ package objectivetester;
  */
 interface Const {
 
-    //these are used internally to denote action and element type 
+    //these are used internally to denote action
     static final String EDIT = "edit";
 
     static final String ASSERT = "assert";

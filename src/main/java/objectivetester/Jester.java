@@ -37,7 +37,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     DefaultMutableTreeNode rootNode;
     private DefaultTreeModel treeModel;
     JTree jTree;
-    int arrayIndex = 0;
     Boolean array = false;
     private final JPopupMenu popup;
     private final APIConnector apiCon = new APIConnector(this);
@@ -78,7 +77,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         menuItem.addActionListener((ActionListener) popupListener);
         popup.add(menuItem);
         jTree.addMouseListener(popupListener);
-
 
         //get prefs
         prefs = Preferences.userRoot().node("jester");
@@ -859,24 +857,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private javax.swing.JTextArea textConsole;
     // End of variables declaration//GEN-END:variables
 
-    private void exitProcedure() {
-        apiCon.close();
-        this.dispose();
-        System.exit(0);
-    }
-
-    @Override
-    public void addItem(String element, Object stack, String name, String id, String value, Object webElement, Boolean displayed) {
-
-    }
-
-    @Override
-    public void abort() {
-        //triggers a UI cleanup
-        this.errorMessage("Unexpected error!");
-        //buttonGet.doClick();
-    }
-
     @Override
     public void addCode(String fragment) {
         //adds content to the generated code
@@ -898,32 +878,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     }
 
     @Override
-    public boolean alertResponse(String title) {
-        int ok = JOptionPane.showConfirmDialog(new JFrame(), title, "Alert box opened by browser", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (ok == 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     public String enterValue(String title) {
         return (String) JOptionPane.showInputDialog(new JFrame(), title, "Enter Value", JOptionPane.QUESTION_MESSAGE);
-    }
-
-    @Override
-    public String enterSelection(String title, String choices[]) {
-        return (String) JOptionPane.showInputDialog(new JFrame(), title, "Make Selection", JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
-    }
-
-    @Override
-    public void elementIdent(String text) {
-        if (text.length() > Const.MAX_SIZ) {
-            //crop the text
-            text = text.substring(0, Const.MAX_SIZ);
-        }
-        JOptionPane.showMessageDialog(new JFrame(), text, "Element Highlighted in Browser", JOptionPane.PLAIN_MESSAGE);
     }
 
     @Override
@@ -936,17 +892,12 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     }
 
     @Override
-    public void finished() {
-        //tableElements.setForeground(Color.BLACK);
-    }
-
-    @Override
     public void start(Object blob) {
         //wipe the structure first
         process(rootNode, "", blob, new AtomicInteger(-1));
     }
 
-    public void process(DefaultMutableTreeNode parent, String key, Object value, AtomicInteger idx) {
+    void process(DefaultMutableTreeNode parent, String key, Object value, AtomicInteger idx) {
 
         AtomicInteger innerIndex = new AtomicInteger(idx.get());
 

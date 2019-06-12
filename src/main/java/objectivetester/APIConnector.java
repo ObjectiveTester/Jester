@@ -18,10 +18,9 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONTokener;
 
-class APIConnector implements Runnable {
+class APIConnector {
 
     UserInterface ui;
-    boolean safe = false;
     Object json;
 
     APIConnector(UserInterface ui) {
@@ -30,23 +29,7 @@ class APIConnector implements Runnable {
 
     //hold an in-memory representation of a JSON object that is updated be GET and sent by POST
     //DELETE is just a simple call
-    
-    
- 
 
-    @Override
-    public void run() {
-        if (null != null) {
-            safe = false;
-
-            ui.finished();
-            safe = true;
-        }
-    }
-
-    void close() {
-
-    }
 
     Integer reqGet(String fullUrl) {
         String data;
