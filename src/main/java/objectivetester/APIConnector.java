@@ -4,13 +4,8 @@ package objectivetester;
  *
  * @author Steve
  */
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+
 import java.io.IOException;
-import java.util.Iterator;
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
@@ -21,7 +16,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONTokener;
 
 class APIConnector implements Runnable {
@@ -55,7 +49,7 @@ class APIConnector implements Runnable {
     }
 
     Integer reqGet(String fullUrl) {
-        String data = new String();
+        String data;
         Integer code = 0;
 
         HttpClientBuilder builder = HttpClients.custom();

@@ -1,12 +1,10 @@
 package objectivetester;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -31,12 +29,10 @@ import org.json.JSONObject;
  *
  * @author Steve
  */
-public class Jester extends javax.swing.JFrame implements UserInterface {
+public class Jester extends javax.swing.JFrame implements UserInterface, ActionListener {
 
     //JSON Tester
     //based on the Wisard code, hence all the mess...
-    
-
     private ImageIcon icon;
     DefaultMutableTreeNode rootNode;
     private DefaultTreeModel treeModel;
@@ -73,30 +69,16 @@ public class Jester extends javax.swing.JFrame implements UserInterface {
 
         //create the popup menu for the element table
         popup = new JPopupMenu();
-        //MouseListener popupListener = new EventListener(popup, tableElements, apiCon);
+        MouseListener popupListener = new EventListener(popup, jTree, apiCon);
 
-        JMenuItem menuItem = new JMenuItem(Const.CLICK);
-        //menuItem.addActionListener((ActionListener) popupListener);
-        popup.add(menuItem);
-        menuItem = new JMenuItem(Const.FIND);
-        //menuItem.addActionListener((ActionListener) popupListener);
+        JMenuItem menuItem = new JMenuItem(Const.EDIT);
+        menuItem.addActionListener((ActionListener) popupListener);
         popup.add(menuItem);
         menuItem = new JMenuItem(Const.ASSERT);
-        //menuItem.addActionListener((ActionListener) popupListener);
+        menuItem.addActionListener((ActionListener) popupListener);
         popup.add(menuItem);
-        menuItem = new JMenuItem(Const.IDENTIFY);
-        //menuItem.addActionListener((ActionListener) popupListener);
-        popup.add(menuItem);
-        //tableElements.addMouseListener(popupListener);
-        //hide the webElements
-        //tableElements.removeColumn(tableElements.getColumn("webElement"));
+        jTree.addMouseListener(popupListener);
 
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent event) {
-                exitProcedure();
-            }
-        });
 
         //get prefs
         prefs = Preferences.userRoot().node("jester");
@@ -534,7 +516,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface {
                 .addComponent(panelSettings, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
         );
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Jester");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setIconImage(icon.getImage());
@@ -558,7 +540,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface {
         });
         jToolBar1.add(currentURI);
         currentURI.getAccessibleContext().setAccessibleName("URI");
-        currentURI.getAccessibleContext().setAccessibleDescription("Service URI");
 
         buttonGET.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/inspect.png"))); // NOI18N
         buttonGET.setToolTipText("GET");
@@ -972,8 +953,11 @@ public class Jester extends javax.swing.JFrame implements UserInterface {
         //System.out.println("class:"+value.getClass());
         if (value instanceof JSONArray) {
 
-            DefaultMutableTreeNode arraynode = new DefaultMutableTreeNode(key);
-            parent.add(arraynode);
+            DefaultMutableTreeNode arraynode = parent;
+            if (!key.isEmpty()) {
+                arraynode = new DefaultMutableTreeNode(key);
+                parent.add(arraynode);
+            }
 
             JSONArray arr = (JSONArray) value;
             Iterator<Object> innerobjects = arr.iterator();
@@ -982,11 +966,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface {
 
                 innerIndex.addAndGet(1);
 
-                if (arraynode.getUserObject().toString().contentEquals(key)) {
-                    process(arraynode, String.valueOf(innerIndex.get()), innerobject, innerIndex);
-                } else {
-                    process(arraynode, key, innerobject, innerIndex);
-                }
+                process(arraynode, String.valueOf(innerIndex.get()), innerobject, innerIndex);
 
             }
 
@@ -1021,4 +1001,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface {
 
     }
 
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        System.out.println("ae:" + ae);
+    }
 }
