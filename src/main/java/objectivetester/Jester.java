@@ -10,8 +10,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.prefs.Preferences;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -22,8 +20,6 @@ import javax.swing.JTree;
 import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  *
@@ -37,7 +33,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     DefaultMutableTreeNode rootNode;
     private DefaultTreeModel treeModel;
     JTree jTree;
-    Boolean array = false;
     private final JPopupMenu popup;
     private final APIConnector apiCon = new APIConnector(this);
     private final Preferences prefs;
@@ -66,14 +61,20 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         System.setOut(printStream);
         System.setErr(printStream);
 
-        //create the popup menu for the element table
+        //create the popup menu
         popup = new JPopupMenu();
         MouseListener popupListener = new EventListener(popup, jTree, apiCon);
 
-        JMenuItem menuItem = new JMenuItem(Const.EDIT);
+        JMenuItem menuItem = new JMenuItem(Const.ASSERT);
         menuItem.addActionListener((ActionListener) popupListener);
         popup.add(menuItem);
-        menuItem = new JMenuItem(Const.ASSERT);
+        menuItem = new JMenuItem(Const.EDIT);
+        menuItem.addActionListener((ActionListener) popupListener);
+        popup.add(menuItem);
+        menuItem = new JMenuItem(Const.INSERT);
+        menuItem.addActionListener((ActionListener) popupListener);
+        popup.add(menuItem);
+        menuItem = new JMenuItem(Const.DELETE);
         menuItem.addActionListener((ActionListener) popupListener);
         popup.add(menuItem);
         jTree.addMouseListener(popupListener);
@@ -92,44 +93,13 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             //prefs.putBoolean("showInvis", false);
             prefs.put("serviceURI", "https://api.github.com/users/objectivetester");
         }
-        //pathFF.setText(prefs.get("driverFF", ""));
-        //pathCR.setText(prefs.get("driverCR", ""));
-        //pathIE.setText(prefs.get("driverIE", ""));
-        //pathED.setText(prefs.get("driverED", ""));
         currentURI.setText(prefs.get("serviceURI", ""));
         serviceURI.setText((prefs.get("serviceURI", "")));
-        if (prefs.get("browser", "").contentEquals("FF")) {
-            buttonFF.setSelected(true);
-        }
-        if (prefs.get("browser", "").contentEquals("CR")) {
-            buttonCR.setSelected(true);
-        }
-        if (prefs.get("browser", "").contentEquals("IE")) {
-            buttonIE.setSelected(true);
-        }
-        if (prefs.get("browser", "").contentEquals("ED")) {
-            buttonED.setSelected(true);
-        }
-        if (prefs.get("browser", "").contentEquals("SA")) {
-            buttonSA.setSelected(true);
-        }
-        if (prefs.getBoolean("showId", false)) {
-            checkBoxId.setSelected(true);
-        } else {
-            //hide id column
-            //tableElements.removeColumn(tableElements.getColumn("id"));
-        }
-        if (prefs.get("output", "").contentEquals("java")) {
-            buttonJava.setSelected(true);
-        }
         if (prefs.get("output", "").contentEquals("junit")) {
             buttonJunit.setSelected(true);
         }
         if (prefs.get("output", "").contentEquals("junit5")) {
             buttonJunit5.setSelected(true);
-        }
-        if (prefs.get("output", "").contentEquals("js")) {
-            buttonJs.setSelected(true);
         }
     }
 
@@ -155,27 +125,14 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         panelSettings = new javax.swing.JPanel();
         labelDefuri = new javax.swing.JLabel();
         serviceURI = new javax.swing.JTextField();
-        labelDispopts = new javax.swing.JLabel();
-        checkBoxId = new javax.swing.JCheckBox();
-        checkBoxInvis = new javax.swing.JCheckBox();
+        labelOpts = new javax.swing.JLabel();
+        checkBox1 = new javax.swing.JCheckBox();
+        checkBox2 = new javax.swing.JCheckBox();
         labelOutput = new javax.swing.JLabel();
         buttonJunit = new javax.swing.JRadioButton();
         buttonJunit5 = new javax.swing.JRadioButton();
-        buttonJava = new javax.swing.JRadioButton();
-        buttonJs = new javax.swing.JRadioButton();
-        labelDriver = new javax.swing.JLabel();
-        buttonFF = new javax.swing.JRadioButton();
-        buttonCR = new javax.swing.JRadioButton();
-        buttonIE = new javax.swing.JRadioButton();
-        buttonED = new javax.swing.JRadioButton();
-        buttonSA = new javax.swing.JRadioButton();
-        pathFF = new javax.swing.JTextField();
-        pathCR = new javax.swing.JTextField();
-        pathIE = new javax.swing.JTextField();
-        labelPlugin = new javax.swing.JLabel();
         buttonSave = new javax.swing.JButton();
         buttonCancel = new javax.swing.JButton();
-        pathED = new javax.swing.JTextField();
         jToolBar1 = new javax.swing.JToolBar();
         labelUri = new javax.swing.JLabel();
         currentURI = new javax.swing.JTextField();
@@ -269,8 +226,9 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
         dialogSettings.setTitle("Settings");
         dialogSettings.setIconImage(icon.getImage());
-        dialogSettings.setMinimumSize(new java.awt.Dimension(500, 500));
+        dialogSettings.setMinimumSize(new java.awt.Dimension(500, 300));
         dialogSettings.setModal(true);
+        dialogSettings.setSize(new java.awt.Dimension(500, 300));
 
         panelSettings.setLayout(new java.awt.GridBagLayout());
 
@@ -300,32 +258,32 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         panelSettings.add(serviceURI, gridBagConstraints);
         serviceURI.getAccessibleContext().setAccessibleName("Default URI");
 
-        labelDispopts.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        labelDispopts.setText("Display Options");
+        labelOpts.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        labelOpts.setText("Options");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
-        panelSettings.add(labelDispopts, gridBagConstraints);
+        panelSettings.add(labelOpts, gridBagConstraints);
 
-        checkBoxId.setText("Show Element 'id'");
-        checkBoxId.setToolTipText("Show Element 'id'");
+        checkBox1.setText("Option1");
+        checkBox1.setToolTipText("Show Element 'id'");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        panelSettings.add(checkBoxId, gridBagConstraints);
-        checkBoxId.getAccessibleContext().setAccessibleDescription("Show id");
+        panelSettings.add(checkBox1, gridBagConstraints);
+        checkBox1.getAccessibleContext().setAccessibleDescription("Show id");
 
-        checkBoxInvis.setText("List invisible Elements");
-        checkBoxInvis.setToolTipText("List invisible Elements");
+        checkBox2.setText("Option2");
+        checkBox2.setToolTipText("List invisible Elements");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        panelSettings.add(checkBoxInvis, gridBagConstraints);
-        checkBoxInvis.getAccessibleContext().setAccessibleDescription("List Invisible");
+        panelSettings.add(checkBox2, gridBagConstraints);
+        checkBox2.getAccessibleContext().setAccessibleDescription("List Invisible");
 
         labelOutput.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         labelOutput.setText("Generated Output");
@@ -352,118 +310,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         panelSettings.add(buttonJunit5, gridBagConstraints);
 
-        buttonsOutput.add(buttonJava);
-        buttonJava.setText("Java");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        panelSettings.add(buttonJava, gridBagConstraints);
-
-        buttonsOutput.add(buttonJs);
-        buttonJs.setText("JavaScript");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        panelSettings.add(buttonJs, gridBagConstraints);
-
-        labelDriver.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        labelDriver.setText("Target Browser and driver");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 20);
-        panelSettings.add(labelDriver, gridBagConstraints);
-
-        buttonsBrowser.add(buttonFF);
-        buttonFF.setText("Firefox");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        panelSettings.add(buttonFF, gridBagConstraints);
-
-        buttonsBrowser.add(buttonCR);
-        buttonCR.setText("Chrome");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 13;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        panelSettings.add(buttonCR, gridBagConstraints);
-
-        buttonsBrowser.add(buttonIE);
-        buttonIE.setText("Internet Explorer");
-        buttonIE.setToolTipText("Internet Explorer");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 15;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        panelSettings.add(buttonIE, gridBagConstraints);
-        buttonIE.getAccessibleContext().setAccessibleDescription("IE");
-
-        buttonsBrowser.add(buttonED);
-        buttonED.setText("Edge");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 17;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        panelSettings.add(buttonED, gridBagConstraints);
-
-        buttonsBrowser.add(buttonSA);
-        buttonSA.setText("Safari");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 19;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        panelSettings.add(buttonSA, gridBagConstraints);
-
-        pathFF.setColumns(20);
-        pathFF.setText("pathFF");
-        pathFF.setToolTipText("Path to Gecko driver");
-        pathFF.setName(""); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 11;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 100;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        panelSettings.add(pathFF, gridBagConstraints);
-
-        pathCR.setColumns(20);
-        pathCR.setText("pathCR");
-        pathCR.setToolTipText("Path to Chrome driver");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 13;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 100;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        panelSettings.add(pathCR, gridBagConstraints);
-        pathCR.getAccessibleContext().setAccessibleName("Chrome driver");
-
-        pathIE.setColumns(20);
-        pathIE.setText("pathIE");
-        pathIE.setToolTipText("Path to IE driver");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 15;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 100;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        panelSettings.add(pathIE, gridBagConstraints);
-        pathIE.getAccessibleContext().setAccessibleName("IE driver");
-
-        labelPlugin.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
-        labelPlugin.setText("/usr/bin/safaridriver");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 19;
-        panelSettings.add(labelPlugin, gridBagConstraints);
-
         buttonSave.setText("Save");
         buttonSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -472,7 +318,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 20;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
         panelSettings.add(buttonSave, gridBagConstraints);
 
@@ -484,20 +330,9 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 20;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
         panelSettings.add(buttonCancel, gridBagConstraints);
-
-        pathED.setColumns(20);
-        pathED.setText("pathED");
-        pathED.setToolTipText("Path to Edge driver");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 17;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.ipadx = 100;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        panelSettings.add(pathED, gridBagConstraints);
 
         javax.swing.GroupLayout dialogSettingsLayout = new javax.swing.GroupLayout(dialogSettings.getContentPane());
         dialogSettings.getContentPane().setLayout(dialogSettingsLayout);
@@ -505,7 +340,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             dialogSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 400, Short.MAX_VALUE)
             .addGroup(dialogSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(panelSettings, javax.swing.GroupLayout.PREFERRED_SIZE, 400, Short.MAX_VALUE))
+                .addComponent(panelSettings, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))
         );
         dialogSettingsLayout.setVerticalGroup(
             dialogSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -553,17 +388,29 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         jToolBar1.add(buttonGET);
 
         buttonPOST.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/refresh.png"))); // NOI18N
+        buttonPOST.setToolTipText("POST");
+        buttonPOST.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         buttonPOST.setFocusable(false);
         buttonPOST.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        buttonPOST.setPreferredSize(new java.awt.Dimension(28, 28));
         buttonPOST.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        buttonPOST.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonPOSTActionPerformed(evt);
+            }
+        });
         jToolBar1.add(buttonPOST);
 
         buttonDELETE.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cancel.png"))); // NOI18N
+        buttonDELETE.setToolTipText("DELETE");
+        buttonDELETE.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         buttonDELETE.setFocusable(false);
         buttonDELETE.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        buttonDELETE.setPreferredSize(new java.awt.Dimension(28, 28));
         buttonDELETE.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        buttonDELETE.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonDELETEActionPerformed(evt);
+            }
+        });
         jToolBar1.add(buttonDELETE);
 
         getContentPane().add(jToolBar1, java.awt.BorderLayout.PAGE_START);
@@ -642,55 +489,22 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         //update UI
         currentURI.setText(serviceURI.getText());
 
-        if (!prefs.getBoolean("showId", false) && checkBoxId.isSelected()) {
-            //reset table to show id
-
-            //re-hide webElements
+        if (prefs.getBoolean("option1", false) && checkBox1.isSelected()) {
         }
-        if (prefs.getBoolean("showId", false) && !checkBoxId.isSelected()) {
-            //hide id column
-
+        if (prefs.getBoolean("option2", false) && checkBox1.isSelected()) {
         }
 
         //save new settings
         prefs.put("serviceURI", serviceURI.getText());
 
-        prefs.putBoolean("showId", checkBoxId.isSelected());
-        prefs.putBoolean("showInvis", checkBoxInvis.isSelected());
-
-        if (buttonFF.isSelected()) {
-            prefs.put("browser", "FF");
-        }
-        if (buttonIE.isSelected()) {
-            prefs.put("browser", "IE");
-        }
-        if (buttonED.isSelected()) {
-            prefs.put("browser", "ED");
-        }
-        if (buttonCR.isSelected()) {
-            prefs.put("browser", "CR");
-        }
-        if (buttonSA.isSelected()) {
-            prefs.put("browser", "SA");
-        }
+        //prefs.putBoolean("showId", checkBox1.isSelected());
+        //prefs.putBoolean("showInvis", checkBox2.isSelected());
         if (buttonJunit.isSelected()) {
             prefs.put("output", "junit");
         }
         if (buttonJunit5.isSelected()) {
             prefs.put("output", "junit5");
         }
-        if (buttonJava.isSelected()) {
-            prefs.put("output", "java");
-        }
-        if (buttonJs.isSelected()) {
-            prefs.put("output", "js");
-        }
-
-        prefs.put("driverFF", pathFF.getText());
-        prefs.put("driverCR", pathCR.getText());
-        prefs.put("driverIE", pathIE.getText());
-        prefs.put("driverED", pathED.getText());
-
         dialogSettings.setVisible(false);
     }//GEN-LAST:event_buttonSaveActionPerformed
 
@@ -698,7 +512,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         rootNode.removeAllChildren(); //this removes all nodes
         treeModel.reload(); //this notifies the listeners and changes the GUI
         System.out.println("GET " + currentURI.getText());
-        System.out.println(apiCon.reqGet(currentURI.getText()));
+        System.out.println(apiCon.reqGet(currentURI.getText(), rootNode));
     }//GEN-LAST:event_buttonGETActionPerformed
 
     private void labelLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelLinkMouseClicked
@@ -743,29 +557,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         // TODO add your handling code here:
         //restore original settings
         serviceURI.setText((prefs.get("serviceURI", "")));
-        checkBoxId.setSelected(prefs.getBoolean("showId", true));
-        checkBoxInvis.setSelected(prefs.getBoolean("showInvis", true));
-
-        if (prefs.get("browser", "").contentEquals("FF")) {
-            buttonFF.setSelected(true);
-        }
-        if (prefs.get("browser", "").contentEquals("CR")) {
-            buttonCR.setSelected(true);
-        }
-        if (prefs.get("browser", "").contentEquals("IE")) {
-            buttonIE.setSelected(true);
-        }
-        if (prefs.get("browser", "").contentEquals("ED")) {
-            buttonED.setSelected(true);
-        }
-        if (prefs.get("browser", "").contentEquals("SA")) {
-            buttonSA.setSelected(true);
-        }
-
-        pathFF.setText(prefs.get("driverFF", ""));
-        pathCR.setText(prefs.get("driverCR", ""));
-        pathIE.setText(prefs.get("driverIE", ""));
-        pathED.setText(prefs.get("driverED", ""));
+        //checkBox1.setSelected(prefs.getBoolean("showId", true));
+        //checkBox2.setSelected(prefs.getBoolean("showInvis", true));
 
         dialogSettings.setVisible(false);
     }//GEN-LAST:event_buttonCancelActionPerformed
@@ -773,6 +566,14 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private void serviceURIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serviceURIActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_serviceURIActionPerformed
+
+    private void buttonPOSTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPOSTActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buttonPOSTActionPerformed
+
+    private void buttonDELETEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDELETEActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_buttonDELETEActionPerformed
 
     /**
      * @param args the command line arguments
@@ -802,25 +603,18 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JRadioButton buttonCR;
     private javax.swing.JButton buttonCancel;
     private javax.swing.JButton buttonCool;
     private javax.swing.JButton buttonDELETE;
-    private javax.swing.JRadioButton buttonED;
-    private javax.swing.JRadioButton buttonFF;
     private javax.swing.JButton buttonGET;
-    private javax.swing.JRadioButton buttonIE;
-    private javax.swing.JRadioButton buttonJava;
-    private javax.swing.JRadioButton buttonJs;
     private javax.swing.JRadioButton buttonJunit;
     private javax.swing.JRadioButton buttonJunit5;
     private javax.swing.JButton buttonPOST;
-    private javax.swing.JRadioButton buttonSA;
     private javax.swing.JButton buttonSave;
     private javax.swing.ButtonGroup buttonsBrowser;
     private javax.swing.ButtonGroup buttonsOutput;
-    private javax.swing.JCheckBox checkBoxId;
-    private javax.swing.JCheckBox checkBoxInvis;
+    private javax.swing.JCheckBox checkBox1;
+    private javax.swing.JCheckBox checkBox2;
     private javax.swing.JTextArea code;
     private javax.swing.JTextField currentURI;
     private javax.swing.JDialog dialogAbout;
@@ -830,12 +624,10 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private javax.swing.JLabel labelCopyright;
     private javax.swing.JLabel labelDefuri;
     private javax.swing.JLabel labelDesc;
-    private javax.swing.JLabel labelDispopts;
-    private javax.swing.JLabel labelDriver;
     private javax.swing.JLabel labelLink;
     private javax.swing.JLabel labelName;
+    private javax.swing.JLabel labelOpts;
     private javax.swing.JLabel labelOutput;
-    private javax.swing.JLabel labelPlugin;
     private javax.swing.JLabel labelUri;
     private javax.swing.JMenuItem menuAbout;
     private javax.swing.JMenuBar menuBar;
@@ -849,10 +641,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private javax.swing.JScrollPane paneTree;
     private javax.swing.JPanel panelAbout;
     private javax.swing.JPanel panelSettings;
-    private javax.swing.JTextField pathCR;
-    private javax.swing.JTextField pathED;
-    private javax.swing.JTextField pathFF;
-    private javax.swing.JTextField pathIE;
     private javax.swing.JTextField serviceURI;
     private javax.swing.JTextArea textConsole;
     // End of variables declaration//GEN-END:variables
@@ -889,67 +677,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             message = message.substring(0, Const.MAX_SIZ);
         }
         JOptionPane.showMessageDialog(new JFrame(), message.replace(". ", ". \n"), "Error", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    @Override
-    public void start(Object blob) {
-        //wipe the structure first
-        process(rootNode, "", blob, new AtomicInteger(-1));
-    }
-
-    void process(DefaultMutableTreeNode parent, String key, Object value, AtomicInteger idx) {
-
-        AtomicInteger innerIndex = new AtomicInteger(idx.get());
-
-        //System.out.println("class:"+value.getClass());
-        if (value instanceof JSONArray) {
-
-            DefaultMutableTreeNode arraynode = parent;
-            if (!key.isEmpty()) {
-                arraynode = new DefaultMutableTreeNode(key);
-                parent.add(arraynode);
-            }
-
-            JSONArray arr = (JSONArray) value;
-            Iterator<Object> innerobjects = arr.iterator();
-            while (innerobjects.hasNext()) {
-                Object innerobject = innerobjects.next();
-
-                innerIndex.addAndGet(1);
-
-                process(arraynode, String.valueOf(innerIndex.get()), innerobject, innerIndex);
-
-            }
-
-        } else if (value instanceof JSONObject) {
-
-            DefaultMutableTreeNode objectnode = parent;
-            if (!key.isEmpty()) {
-                if (innerIndex.get() > -1) {
-                    objectnode = new DefaultMutableTreeNode(innerIndex);
-                } else {
-                    objectnode = new DefaultMutableTreeNode(key);
-                }
-                parent.add(objectnode);
-            }
-
-            JSONObject obj = (JSONObject) value;
-            Iterator<String> innerkeys = obj.keys();
-            while (innerkeys.hasNext()) {
-                String innerkey = innerkeys.next();
-                Object innervalue = obj.get(innerkey);
-
-                process(objectnode, innerkey, innervalue, new AtomicInteger(-1));
-            }
-        } else {
-
-            DefaultMutableTreeNode keynode = new DefaultMutableTreeNode(key);
-            parent.add(keynode);
-            DefaultMutableTreeNode valuenode = new DefaultMutableTreeNode(value);
-            keynode.add(valuenode);
-
-        }
-
     }
 
     @Override

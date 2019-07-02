@@ -4,8 +4,10 @@ package objectivetester;
  *
  * @author Steve
  */
-
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.swing.tree.DefaultMutableTreeNode;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
@@ -16,6 +18,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONTokener;
 
 class APIConnector {
@@ -29,9 +32,7 @@ class APIConnector {
 
     //hold an in-memory representation of a JSON object that is updated be GET and sent by POST
     //DELETE is just a simple call
-
-
-    Integer reqGet(String fullUrl) {
+    Integer reqGet(String fullUrl, DefaultMutableTreeNode node) {
         String data;
         Integer code = 0;
 
@@ -45,10 +46,11 @@ class APIConnector {
             HttpResponse response = httpclient.execute(get);
             data = EntityUtils.toString(response.getEntity());
             code = response.getStatusLine().getStatusCode();
-            
+
             json = new JSONTokener(data).nextValue();
 
-            ui.start(json);
+            process(node, "", json, new AtomicInteger(-1));
+
         } catch (IOException | ParseException ex) {
             System.out.println(ex);
         }
@@ -79,6 +81,61 @@ class APIConnector {
         }
 
         return code;
+    }
+
+    void process(DefaultMutableTreeNode parent, String key, Object value, AtomicInteger idx) {
+
+        AtomicInteger innerIndex = new AtomicInteger(idx.get());
+
+        //System.out.println("class:"+value.getClass());
+        if (value instanceof JSONArray) {
+
+            DefaultMutableTreeNode arraynode = parent;
+            if (!key.isEmpty()) {
+                arraynode = new DefaultMutableTreeNode(key);
+                parent.add(arraynode);
+            }
+
+            JSONArray arr = (JSONArray) value;
+            Iterator<Object> innerobjects = arr.iterator();
+            while (innerobjects.hasNext()) {
+                Object innerobject = innerobjects.next();
+
+                innerIndex.addAndGet(1);
+
+                process(arraynode, String.valueOf(innerIndex.get()), innerobject, innerIndex);
+
+            }
+
+        } else if (value instanceof JSONObject) {
+
+            DefaultMutableTreeNode objectnode = parent;
+            if (!key.isEmpty()) {
+                if (innerIndex.get() > -1) {
+                    objectnode = new DefaultMutableTreeNode(innerIndex);
+                } else {
+                    objectnode = new DefaultMutableTreeNode(key);
+                }
+                parent.add(objectnode);
+            }
+
+            JSONObject obj = (JSONObject) value;
+            Iterator<String> innerkeys = obj.keys();
+            while (innerkeys.hasNext()) {
+                String innerkey = innerkeys.next();
+                Object innervalue = obj.get(innerkey);
+
+                process(objectnode, innerkey, innervalue, new AtomicInteger(-1));
+            }
+        } else {
+
+            DefaultMutableTreeNode keynode = new DefaultMutableTreeNode(key);
+            parent.add(keynode);
+            DefaultMutableTreeNode valuenode = new DefaultMutableTreeNode(value);
+            keynode.add(valuenode);
+
+        }
+
     }
 
 }
