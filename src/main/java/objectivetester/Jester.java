@@ -28,13 +28,13 @@ import javax.swing.tree.DefaultTreeModel;
 public class Jester extends javax.swing.JFrame implements UserInterface, ActionListener {
 
     //JSON Tester
-    //based on the Wisard code, hence all the mess...
     private ImageIcon icon;
     DefaultMutableTreeNode rootNode;
     private DefaultTreeModel treeModel;
     JTree jTree;
     private final JPopupMenu popup;
     private final APIConnector apiCon = new APIConnector(this);
+    DefaultWriter writer;
     private final Preferences prefs;
 
     /**
@@ -63,7 +63,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
         //create the popup menu
         popup = new JPopupMenu();
-        MouseListener popupListener = new EventListener(popup, jTree, apiCon);
+        MouseListener popupListener = new EventListener(popup, jTree, this);
 
         JMenuItem menuItem = new JMenuItem(Const.ASSERT);
         menuItem.addActionListener((ActionListener) popupListener);
@@ -82,21 +82,16 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         //get prefs
         prefs = Preferences.userRoot().node("jester");
         if (prefs.get("serviceURI", "").contentEquals("")) {
-            //System.out.println("no prefs, writing defaults");
-            //prefs.put("browser", "FF");
-            //prefs.put("output", "junit");
-            //prefs.put("driverFF", "./geckodriver.exe");
-            //prefs.put("driverCR", "./chromedriver.exe");
-            //prefs.put("driverIE", "./IEDriverServer.exe");
-            //prefs.put("driverED", "./MicrosoftWebDriver.exe");
-            //prefs.putBoolean("showId", false);
-            //prefs.putBoolean("showInvis", false);
+            //prefs.putBoolean("option1", false);
+            //prefs.putBoolean("option2", false);
             prefs.put("serviceURI", "https://api.github.com/users/objectivetester");
         }
         currentURI.setText(prefs.get("serviceURI", ""));
         serviceURI.setText((prefs.get("serviceURI", "")));
         if (prefs.get("output", "").contentEquals("junit")) {
             buttonJunit.setSelected(true);
+            writer = new TestWriter(this);
+            writer.writeHeader();
         }
         if (prefs.get("output", "").contentEquals("junit5")) {
             buttonJunit5.setSelected(true);
@@ -112,7 +107,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        buttonsBrowser = new javax.swing.ButtonGroup();
         buttonsOutput = new javax.swing.ButtonGroup();
         dialogAbout = new javax.swing.JDialog();
         panelAbout = new javax.swing.JPanel();
@@ -497,8 +491,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         //save new settings
         prefs.put("serviceURI", serviceURI.getText());
 
-        //prefs.putBoolean("showId", checkBox1.isSelected());
-        //prefs.putBoolean("showInvis", checkBox2.isSelected());
+        //prefs.putBoolean("option1", checkBox1.isSelected());
+        //prefs.putBoolean("option2", checkBox2.isSelected());
         if (buttonJunit.isSelected()) {
             prefs.put("output", "junit");
         }
@@ -611,7 +605,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private javax.swing.JRadioButton buttonJunit5;
     private javax.swing.JButton buttonPOST;
     private javax.swing.JButton buttonSave;
-    private javax.swing.ButtonGroup buttonsBrowser;
     private javax.swing.ButtonGroup buttonsOutput;
     private javax.swing.JCheckBox checkBox1;
     private javax.swing.JCheckBox checkBox2;
@@ -682,5 +675,10 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     @Override
     public void actionPerformed(ActionEvent ae) {
         System.out.println("ae:" + ae);
+    }
+
+    @Override
+    public void writeHeader() {
+        writer.writeHeader();
     }
 }

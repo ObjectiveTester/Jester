@@ -49,7 +49,7 @@ class APIConnector {
 
             json = new JSONTokener(data).nextValue();
 
-            process(node, "", json, new AtomicInteger(-1));
+            unpack(node, "", json, new AtomicInteger(-1));
 
         } catch (IOException | ParseException ex) {
             System.out.println(ex);
@@ -83,7 +83,7 @@ class APIConnector {
         return code;
     }
 
-    void process(DefaultMutableTreeNode parent, String key, Object value, AtomicInteger idx) {
+    void unpack(DefaultMutableTreeNode parent, String key, Object value, AtomicInteger idx) {
 
         AtomicInteger innerIndex = new AtomicInteger(idx.get());
 
@@ -92,7 +92,7 @@ class APIConnector {
 
             DefaultMutableTreeNode arraynode = parent;
             if (!key.isEmpty()) {
-                arraynode = new DefaultMutableTreeNode(key);
+                arraynode = new DefaultMutableTreeNode(new JsonElement(key,Type.KEY));
                 parent.add(arraynode);
             }
 
@@ -103,7 +103,7 @@ class APIConnector {
 
                 innerIndex.addAndGet(1);
 
-                process(arraynode, String.valueOf(innerIndex.get()), innerobject, innerIndex);
+                unpack(arraynode, String.valueOf(innerIndex.get()), innerobject, innerIndex);
 
             }
 
@@ -112,9 +112,9 @@ class APIConnector {
             DefaultMutableTreeNode objectnode = parent;
             if (!key.isEmpty()) {
                 if (innerIndex.get() > -1) {
-                    objectnode = new DefaultMutableTreeNode(innerIndex);
+                    objectnode = new DefaultMutableTreeNode(new JsonElement(innerIndex.toString(),Type.ARRAY));
                 } else {
-                    objectnode = new DefaultMutableTreeNode(key);
+                    objectnode = new DefaultMutableTreeNode(new JsonElement(key,Type.KEY));
                 }
                 parent.add(objectnode);
             }
@@ -125,13 +125,13 @@ class APIConnector {
                 String innerkey = innerkeys.next();
                 Object innervalue = obj.get(innerkey);
 
-                process(objectnode, innerkey, innervalue, new AtomicInteger(-1));
+                unpack(objectnode, innerkey, innervalue, new AtomicInteger(-1));
             }
         } else {
 
-            DefaultMutableTreeNode keynode = new DefaultMutableTreeNode(key);
+            DefaultMutableTreeNode keynode = new DefaultMutableTreeNode(new JsonElement(key,Type.KEY));
             parent.add(keynode);
-            DefaultMutableTreeNode valuenode = new DefaultMutableTreeNode(value);
+            DefaultMutableTreeNode valuenode = new DefaultMutableTreeNode(new JsonElement(value.toString(),Type.VALUE));
             keynode.add(valuenode);
 
         }

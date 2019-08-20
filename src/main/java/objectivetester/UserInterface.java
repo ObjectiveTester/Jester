@@ -13,4 +13,7 @@ interface UserInterface {
     String enterValue(String title);
 
     void errorMessage(String message);
+    
+    void writeHeader();
+    
 }

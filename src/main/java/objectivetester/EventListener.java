@@ -17,15 +17,15 @@ class EventListener extends MouseAdapter implements ActionListener {
 
     JPopupMenu popup;
     JTree tree;
-    APIConnector api;
+    UserInterface ui;
     int current;
     TreePath nodePath;
     DefaultMutableTreeNode nodeSelected;
 
-    EventListener(JPopupMenu popup, JTree tree, APIConnector api) {
+    EventListener(JPopupMenu popup, JTree tree, UserInterface ui) {
         this.popup = popup;
         this.tree = tree;
-        this.api = api;
+        this.ui = ui;
     }
 
     @Override
