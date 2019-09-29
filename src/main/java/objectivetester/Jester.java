@@ -563,6 +563,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
     private void buttonPOSTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPOSTActionPerformed
         // TODO add your handling code here:
+        System.out.println("POST " + currentURI.getText());
+        apiCon.repack(rootNode);
     }//GEN-LAST:event_buttonPOSTActionPerformed
 
     private void buttonDELETEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDELETEActionPerformed
@@ -680,5 +682,15 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     @Override
     public void writeHeader() {
         writer.writeHeader();
+    }
+
+    @Override
+    public void delete(DefaultMutableTreeNode target) {
+        treeModel.removeNodeFromParent(target);
+        treeModel.reload();
+    }
+
+    @Override
+    public void edit(DefaultMutableTreeNode target, String value) {
     }
 }

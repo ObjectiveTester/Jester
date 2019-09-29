@@ -5,9 +5,10 @@ package objectivetester;
  * @author Steve
  */
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
@@ -49,7 +50,7 @@ class APIConnector {
 
             json = new JSONTokener(data).nextValue();
 
-            unpack(node, "", json, new AtomicInteger(-1));
+            unpack(node, "", json, -1);
 
         } catch (IOException | ParseException ex) {
             System.out.println(ex);
@@ -83,16 +84,16 @@ class APIConnector {
         return code;
     }
 
-    void unpack(DefaultMutableTreeNode parent, String key, Object value, AtomicInteger idx) {
+    void unpack(DefaultMutableTreeNode parent, String key, Object value, int idx) {
 
-        AtomicInteger innerIndex = new AtomicInteger(idx.get());
+        int innerIndex = idx;
 
         //System.out.println("class:"+value.getClass());
         if (value instanceof JSONArray) {
 
             DefaultMutableTreeNode arraynode = parent;
             if (!key.isEmpty()) {
-                arraynode = new DefaultMutableTreeNode(new JsonElement(key,Type.KEY));
+                arraynode = new DefaultMutableTreeNode(new JsonElement(key, Type.ARRAY));
                 parent.add(arraynode);
             }
 
@@ -101,9 +102,9 @@ class APIConnector {
             while (innerobjects.hasNext()) {
                 Object innerobject = innerobjects.next();
 
-                innerIndex.addAndGet(1);
+                innerIndex++;
 
-                unpack(arraynode, String.valueOf(innerIndex.get()), innerobject, innerIndex);
+                unpack(arraynode, Integer.toString(innerIndex), innerobject, innerIndex);
 
             }
 
@@ -111,10 +112,10 @@ class APIConnector {
 
             DefaultMutableTreeNode objectnode = parent;
             if (!key.isEmpty()) {
-                if (innerIndex.get() > -1) {
-                    objectnode = new DefaultMutableTreeNode(new JsonElement(innerIndex.toString(),Type.ARRAY));
+                if (innerIndex > -1) {
+                    objectnode = new DefaultMutableTreeNode(new JsonElement(Integer.toString(innerIndex), Type.ARRAY));
                 } else {
-                    objectnode = new DefaultMutableTreeNode(new JsonElement(key,Type.KEY));
+                    objectnode = new DefaultMutableTreeNode(new JsonElement(key, Type.KEY));
                 }
                 parent.add(objectnode);
             }
@@ -125,14 +126,30 @@ class APIConnector {
                 String innerkey = innerkeys.next();
                 Object innervalue = obj.get(innerkey);
 
-                unpack(objectnode, innerkey, innervalue, new AtomicInteger(-1));
+                unpack(objectnode, innerkey, innervalue, -1);
             }
         } else {
 
-            DefaultMutableTreeNode keynode = new DefaultMutableTreeNode(new JsonElement(key,Type.KEY));
+            DefaultMutableTreeNode keynode = new DefaultMutableTreeNode(new JsonElement(key, Type.KEY));
             parent.add(keynode);
-            DefaultMutableTreeNode valuenode = new DefaultMutableTreeNode(new JsonElement(value.toString(),Type.VALUE));
+            DefaultMutableTreeNode valuenode = new DefaultMutableTreeNode(new JsonElement(value.toString(), Type.VALUE));
             keynode.add(valuenode);
+
+        }
+
+    }
+
+    void repack(DefaultMutableTreeNode parent) {
+        Enumeration<TreeNode> e = parent.preorderEnumeration();
+        while (e.hasMoreElements()) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
+
+            if (node.isLeaf()) {
+                System.out.print("LEAF ");
+            } else {
+                System.out.println("NODE ");
+            }
+            System.out.println(node.toString());
 
         }
 

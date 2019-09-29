@@ -47,13 +47,14 @@ class EventListener extends MouseAdapter implements ActionListener {
         if (e.isPopupTrigger()) {
             //reenable all choices
             popup.getComponent(Const.POP_ASSERT).setEnabled(true); //assert
-            popup.getComponent(Const.POP_EDIT).setEnabled(false);  //edit
-            popup.getComponent(Const.POP_INS).setEnabled(false);   //insert
-            popup.getComponent(Const.POP_DEL).setEnabled(false);   //delete
+            popup.getComponent(Const.POP_EDIT).setEnabled(true);  //edit
+            popup.getComponent(Const.POP_INS).setEnabled(true);   //insert
+            popup.getComponent(Const.POP_DEL).setEnabled(true);   //delete
 
             nodePath = tree.getPathForLocation(e.getPoint().x, e.getPoint().y);
             if (nodePath != null) {
-                nodeSelected = (DefaultMutableTreeNode) nodePath.getLastPathComponent();
+                //nodeSelected = (DefaultMutableTreeNode) nodePath.getLastPathComponent();
+                nodeSelected = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
             } else {
                 nodeSelected = null;
             }
@@ -77,11 +78,20 @@ class EventListener extends MouseAdapter implements ActionListener {
 
         if (e.getActionCommand().contentEquals(Const.EDIT)) {
             System.out.println(Const.EDIT);
+            ui.enterValue("");
         }
 
         if (e.getActionCommand().contentEquals(Const.ASSERT)) {
             System.out.println(Const.ASSERT + " " + nodePath);
         }
 
+        if (e.getActionCommand().contentEquals(Const.INSERT)) {
+            System.out.println(Const.INSERT + " " + nodePath);
+        }
+
+        if (e.getActionCommand().contentEquals(Const.DELETE)) {
+            System.out.println(Const.DELETE + " " + nodePath);
+            ui.delete(nodeSelected);   
+        }
     }
 }

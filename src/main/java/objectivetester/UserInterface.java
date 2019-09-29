@@ -1,5 +1,7 @@
 package objectivetester;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 /**
  *
  * @author Steve
@@ -16,4 +18,7 @@ interface UserInterface {
     
     void writeHeader();
     
+    void delete(DefaultMutableTreeNode target);
+    
+    void edit(DefaultMutableTreeNode target, String value);
 }
