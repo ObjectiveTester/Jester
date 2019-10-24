@@ -5,8 +5,11 @@ package objectivetester;
  * @author Steve
  */
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.apache.http.HttpResponse;
@@ -26,6 +29,7 @@ class APIConnector {
 
     UserInterface ui;
     Object json;
+    Boolean isArray = false;
 
     APIConnector(UserInterface ui) {
         this.ui = ui;
@@ -49,6 +53,12 @@ class APIConnector {
             code = response.getStatusLine().getStatusCode();
 
             json = new JSONTokener(data).nextValue();
+
+            if (json instanceof JSONArray) {
+                isArray = true;
+            } else {
+                isArray = false;
+            }
 
             unpack(node, "", json, -1);
 
@@ -93,7 +103,7 @@ class APIConnector {
 
             DefaultMutableTreeNode arraynode = parent;
             if (!key.isEmpty()) {
-                arraynode = new DefaultMutableTreeNode(new JsonElement(key, Type.ARRAY));
+                arraynode = new DefaultMutableTreeNode(new JsonElement(key, Type.ARRAYKEY));
                 parent.add(arraynode);
             }
 
@@ -139,17 +149,84 @@ class APIConnector {
 
     }
 
-    void repack(DefaultMutableTreeNode parent) {
-        Enumeration<TreeNode> e = parent.preorderEnumeration();
+    String repack(DefaultMutableTreeNode parent) {
+
+        if (isArray) {
+            System.out.println("A");
+            ArrayList arr = new ArrayList<Map>();
+            recurse(parent, arr, "");
+            return new JSONArray(arr).toString();
+        } else {
+            System.out.println("O");
+            Map<String, Object> obj = new HashMap<>();
+            recurse(parent, obj, "");
+            return new JSONObject(obj).toString();
+        }
+
+    }
+
+    void recurse(DefaultMutableTreeNode treeParent, Object parent, String key) {
+        Enumeration<TreeNode> e = treeParent.children();
+        HashMap h = null;
+        ArrayList a = null;
+        if (parent instanceof Map) {
+            h = (HashMap) parent;
+            System.out.println("hey, we're doing an object");
+        } else if (parent instanceof ArrayList) {
+            a = (ArrayList) parent;
+            System.out.println("hey, we're doing an array");
+        }
+
         while (e.hasMoreElements()) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
+            
+            JsonElement je = (JsonElement) node.getUserObject();
+            System.out.println(je.getType() + "->" + node.toString());
 
-            if (node.isLeaf()) {
-                System.out.print("LEAF ");
+            if (je.getType() == Type.ARRAY) {
+                System.out.print("ARRAY ");
+                System.out.println(node.getParent().getChildCount());
+                System.out.println("doing an array " + node.toString());
+                
+                Map<String, Object> obj = new HashMap<>();
+                recurse(node, obj, "");
+                a.add(obj);
+
+            } else if (je.getType() == Type.ARRAYKEY) {
+                System.out.print("ARRAYKEY ");
+                System.out.println(node.getParent().getChildCount());
+                System.out.println("doing an arraykey " + node.toString());
+                
+                ArrayList arr = new ArrayList<Map>();
+                recurse(node, arr, node.toString());
+                h.put(node.toString(), arr);
+
+            } else if (je.getType() == Type.KEY) {
+                System.out.println("KEY " + key + " " + node.getChildCount());
+
+                if (node.getChildCount() > 1) {
+                    Map<String, Object> newnode = new HashMap<>();
+                    recurse(node, newnode, node.toString());
+                    if (h != null) {
+                        h.put(node.toString(), newnode);
+                    } else {
+                        a.add(newnode);
+                    }
+                } else {
+
+                    if (h != null) {
+                        h.put(node.toString(), node.getFirstChild().toString());
+                    } else {
+                        a.add(node.getFirstChild().toString());
+                    }
+
+                }
+
+            } else if (je.getType() == Type.VALUE) {
+                System.out.println("NOT SURE:" + je.getType());
             } else {
-                System.out.println("NODE ");
+                System.out.println("NOT SURE:" + je.getType());
             }
-            System.out.println(node.toString());
 
         }
 

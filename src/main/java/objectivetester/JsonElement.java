@@ -17,8 +17,9 @@ class JsonElement {
 
     @Override
     public String toString() {
-        return this.elementType.toString()+this.elementName;
-        //return this.elementName;
+        //debug
+        //return this.elementType.toString()+this.elementName;
+        return this.elementName;
     }
 
     Type getType() {
@@ -28,5 +29,5 @@ class JsonElement {
 }
 
 enum Type {
-    ARRAY, KEY, VALUE
+    ARRAY, KEY, VALUE, ARRAYKEY
 }
