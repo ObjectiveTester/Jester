@@ -49,9 +49,8 @@ class APIConnector {
 
         try {
             HttpResponse response = httpclient.execute(get);
-            data = EntityUtils.toString(response.getEntity());
             code = response.getStatusLine().getStatusCode();
-
+            data = EntityUtils.toString(response.getEntity());
             json = new JSONTokener(data).nextValue();
 
             if (json instanceof JSONArray) {
@@ -69,9 +68,10 @@ class APIConnector {
         return code;
     }
 
-    Integer reqPost(String fullUrl, String data) {
-        StringEntity entity = new StringEntity(data, ContentType.APPLICATION_JSON);
+    Integer reqPost(String fullUrl, DefaultMutableTreeNode node) {
 
+        String data = repack(node);
+        StringEntity entity = new StringEntity(data, ContentType.APPLICATION_JSON);
         Integer code = 0;
 
         HttpClientBuilder builder = HttpClients.custom();
@@ -83,9 +83,9 @@ class APIConnector {
         try {
             post.setEntity(entity);
             HttpResponse response = httpclient.execute(post);
-            data = EntityUtils.toString(response.getEntity());
             code = response.getStatusLine().getStatusCode();
-            json = new JSONObject(data);
+            data = EntityUtils.toString(response.getEntity());
+            System.out.print(data);
 
         } catch (IOException | ParseException ex) {
             System.out.println(ex);
@@ -98,7 +98,6 @@ class APIConnector {
 
         int innerIndex = idx;
 
-        //System.out.println("class:"+value.getClass());
         if (value instanceof JSONArray) {
 
             DefaultMutableTreeNode arraynode = parent;
@@ -152,80 +151,64 @@ class APIConnector {
     String repack(DefaultMutableTreeNode parent) {
 
         if (isArray) {
-            System.out.println("A");
             ArrayList arr = new ArrayList<Map>();
-            recurse(parent, arr, "");
+            parse(parent, arr, null);
             return new JSONArray(arr).toString();
         } else {
-            System.out.println("O");
             Map<String, Object> obj = new HashMap<>();
-            recurse(parent, obj, "");
+            parse(parent, obj, null);
             return new JSONObject(obj).toString();
         }
 
     }
 
-    void recurse(DefaultMutableTreeNode treeParent, Object parent, String key) {
+    void parse(DefaultMutableTreeNode treeParent, Object parent, String key) {
         Enumeration<TreeNode> e = treeParent.children();
         HashMap h = null;
         ArrayList a = null;
         if (parent instanceof Map) {
             h = (HashMap) parent;
-            System.out.println("hey, we're doing an object");
         } else if (parent instanceof ArrayList) {
             a = (ArrayList) parent;
-            System.out.println("hey, we're doing an array");
         }
 
         while (e.hasMoreElements()) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
-            
             JsonElement je = (JsonElement) node.getUserObject();
-            System.out.println(je.getType() + "->" + node.toString());
-
             if (je.getType() == Type.ARRAY) {
-                System.out.print("ARRAY ");
-                System.out.println(node.getParent().getChildCount());
-                System.out.println("doing an array " + node.toString());
-                
                 Map<String, Object> obj = new HashMap<>();
-                recurse(node, obj, "");
+                parse(node, obj, "");
                 a.add(obj);
-
             } else if (je.getType() == Type.ARRAYKEY) {
-                System.out.print("ARRAYKEY ");
-                System.out.println(node.getParent().getChildCount());
-                System.out.println("doing an arraykey " + node.toString());
-                
                 ArrayList arr = new ArrayList<Map>();
-                recurse(node, arr, node.toString());
+                parse(node, arr, node.toString());
                 h.put(node.toString(), arr);
-
             } else if (je.getType() == Type.KEY) {
-                System.out.println("KEY " + key + " " + node.getChildCount());
-
                 if (node.getChildCount() > 1) {
                     Map<String, Object> newnode = new HashMap<>();
-                    recurse(node, newnode, node.toString());
+                    parse(node, newnode, node.toString());
                     if (h != null) {
                         h.put(node.toString(), newnode);
                     } else {
                         a.add(newnode);
                     }
-                } else {
-
+                    //values
+                } else if (node.getChildCount() == 1) {
                     if (h != null) {
                         h.put(node.toString(), node.getFirstChild().toString());
                     } else {
                         a.add(node.getFirstChild().toString());
                     }
-
+                } else {
+                    if (h != null) {
+                        h.put(node.toString(), new HashMap<>());
+                    } else {
+                        a.add(node.toString());
+                    }
                 }
 
-            } else if (je.getType() == Type.VALUE) {
-                System.out.println("NOT SURE:" + je.getType());
             } else {
-                System.out.println("NOT SURE:" + je.getType());
+                System.out.println("UNEXPECTED:" + je.getType());
             }
 
         }

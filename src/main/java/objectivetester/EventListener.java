@@ -14,35 +14,35 @@ import javax.swing.tree.TreePath;
  * @author Steve
  */
 class EventListener extends MouseAdapter implements ActionListener {
-
+    
     JPopupMenu popup;
     JTree tree;
     UserInterface ui;
     int current;
     TreePath nodePath;
     DefaultMutableTreeNode nodeSelected;
-
+    
     EventListener(JPopupMenu popup, JTree tree, UserInterface ui) {
         this.popup = popup;
         this.tree = tree;
         this.ui = ui;
     }
-
+    
     @Override
     public void mouseClicked(MouseEvent e) {
     }
-
+    
     @Override
     public void mousePressed(MouseEvent e) {
         clickEvent(e);
         popupEvent(e);
     }
-
+    
     @Override
     public void mouseReleased(MouseEvent e) {
         popupEvent(e);
     }
-
+    
     private void popupEvent(MouseEvent e) {
         if (e.isPopupTrigger()) {
             //reenable all choices
@@ -63,7 +63,7 @@ class EventListener extends MouseAdapter implements ActionListener {
             popup.show(e.getComponent(), e.getX(), e.getY());
         }
     }
-
+    
     private void clickEvent(MouseEvent e) {
         nodePath = tree.getPathForLocation(e.getPoint().x, e.getPoint().y);
         if (nodePath != null) {
@@ -72,26 +72,30 @@ class EventListener extends MouseAdapter implements ActionListener {
             nodeSelected = null;
         }
     }
-
+    
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        
         if (e.getActionCommand().contentEquals(Const.EDIT)) {
-            System.out.println(Const.EDIT);
-            ui.enterValue("");
+            JsonElement je = (JsonElement) nodeSelected.getUserObject();
+            if (je.getType() != Type.ARRAY) {
+                String val = ui.enterValue("new " + je.getType());
+                if (val != null) {
+                    je.elementName = val;
+                    nodeSelected.setUserObject(je);
+                }
+            }
         }
-
+        
         if (e.getActionCommand().contentEquals(Const.ASSERT)) {
             System.out.println(Const.ASSERT + " " + nodePath);
         }
-
+        
         if (e.getActionCommand().contentEquals(Const.INSERT)) {
-            System.out.println(Const.INSERT + " " + nodePath);
         }
-
+        
         if (e.getActionCommand().contentEquals(Const.DELETE)) {
-            System.out.println(Const.DELETE + " " + nodePath);
-            ui.delete(nodeSelected);   
+            ui.delete(nodeSelected);            
         }
     }
 }

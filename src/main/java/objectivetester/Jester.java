@@ -505,7 +505,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private void buttonGETActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGETActionPerformed
         rootNode.removeAllChildren(); //this removes all nodes
         treeModel.reload(); //this notifies the listeners and changes the GUI
-        System.out.println("GET " + currentURI.getText());
+        System.out.print("GET " + currentURI.getText() + " ");
         System.out.println(apiCon.reqGet(currentURI.getText(), rootNode));
     }//GEN-LAST:event_buttonGETActionPerformed
 
@@ -563,12 +563,13 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
     private void buttonPOSTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPOSTActionPerformed
         // TODO add your handling code here:
-        System.out.println("POST " + currentURI.getText());
-        addCode(apiCon.repack(rootNode));
+        System.out.print("POST " + currentURI.getText() + " ");
+        System.out.println(apiCon.reqPost(currentURI.getText(), rootNode));
     }//GEN-LAST:event_buttonPOSTActionPerformed
 
     private void buttonDELETEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDELETEActionPerformed
         // TODO add your handling code here:
+        addCode(apiCon.repack(rootNode));
     }//GEN-LAST:event_buttonDELETEActionPerformed
 
     /**
