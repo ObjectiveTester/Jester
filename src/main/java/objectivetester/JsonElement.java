@@ -6,24 +6,19 @@ package objectivetester;
  */
 class JsonElement {
 
-    String elementName;
+    Object elementObject;
     Type elementType;
 
-    JsonElement(String elementName, Type elementType) {
-        this.elementName = elementName;
+    JsonElement(Object elementObject, Type elementType) {
+        this.elementObject = elementObject;
         this.elementType = elementType;
-
     }
 
     @Override
     public String toString() {
         //debug
-        //return this.elementType.toString()+this.elementName;
-        return this.elementName;
-    }
-
-    Type getType() {
-        return this.elementType;
+        //return this.elementType.toString()+this.elementObject.toString();
+        return this.elementObject.toString();
     }
 
 }

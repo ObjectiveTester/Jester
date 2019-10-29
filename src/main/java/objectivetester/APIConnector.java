@@ -35,8 +35,6 @@ class APIConnector {
         this.ui = ui;
     }
 
-    //hold an in-memory representation of a JSON object that is updated be GET and sent by POST
-    //DELETE is just a simple call
     Integer reqGet(String fullUrl, DefaultMutableTreeNode node) {
         String data;
         Integer code = 0;
@@ -141,7 +139,7 @@ class APIConnector {
 
             DefaultMutableTreeNode keynode = new DefaultMutableTreeNode(new JsonElement(key, Type.KEY));
             parent.add(keynode);
-            DefaultMutableTreeNode valuenode = new DefaultMutableTreeNode(new JsonElement(value.toString(), Type.VALUE));
+            DefaultMutableTreeNode valuenode = new DefaultMutableTreeNode(new JsonElement(value, Type.VALUE));
             keynode.add(valuenode);
 
         }
@@ -174,16 +172,16 @@ class APIConnector {
 
         while (e.hasMoreElements()) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
-            JsonElement je = (JsonElement) node.getUserObject();
-            if (je.getType() == Type.ARRAY) {
+            JsonElement element = (JsonElement) node.getUserObject();
+            if (element.elementType.equals(Type.ARRAY))  {
                 Map<String, Object> obj = new HashMap<>();
                 parse(node, obj, "");
                 a.add(obj);
-            } else if (je.getType() == Type.ARRAYKEY) {
+            } else if (element.elementType.equals(Type.ARRAYKEY)) {
                 ArrayList arr = new ArrayList<Map>();
                 parse(node, arr, node.toString());
                 h.put(node.toString(), arr);
-            } else if (je.getType() == Type.KEY) {
+            } else if (element.elementType.equals(Type.KEY)) {
                 if (node.getChildCount() > 1) {
                     Map<String, Object> newnode = new HashMap<>();
                     parse(node, newnode, node.toString());
@@ -192,23 +190,35 @@ class APIConnector {
                     } else {
                         a.add(newnode);
                     }
-                    //values
+                    //look ahead for values
                 } else if (node.getChildCount() == 1) {
-                    if (h != null) {
-                        h.put(node.toString(), node.getFirstChild().toString());
+                    DefaultMutableTreeNode innerNode = (DefaultMutableTreeNode) node.getFirstChild();
+                    JsonElement innerElement = (JsonElement) innerNode.getUserObject();
+                    //special case - empty array
+                    if (innerElement.elementType.equals(Type.ARRAYKEY)) {
+                        ArrayList arr = new ArrayList<Map>();
+                        Map<String, Object> obj = new HashMap<>();
+                        obj.put(innerElement.toString(), arr);
+                        h.put(node.toString(), obj);
+
                     } else {
-                        a.add(node.getFirstChild().toString());
+                        if (h != null) {
+                            h.put(node.toString(), innerElement.elementObject);
+                        } else {
+                            a.add(innerElement.elementObject);
+                        }
                     }
                 } else {
                     if (h != null) {
                         h.put(node.toString(), new HashMap<>());
                     } else {
-                        a.add(node.toString());
+                        a.add(element.elementObject);
                     }
                 }
 
             } else {
-                System.out.println("UNEXPECTED:" + je.getType());
+                //values should always be found by look-ahead
+                System.out.println("UNEXPECTED:" + element.elementType);
             }
 
         }
