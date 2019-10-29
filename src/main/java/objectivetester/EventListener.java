@@ -78,10 +78,10 @@ class EventListener extends MouseAdapter implements ActionListener {
         
         if (e.getActionCommand().contentEquals(Const.EDIT)) {
             JsonElement je = (JsonElement) nodeSelected.getUserObject();
-            if (je.getType() != Type.ARRAY) {
-                String val = ui.enterValue("new " + je.getType());
+            if (je.elementType.equals(Type.ARRAY))  {
+                String val = ui.enterValue("new " + je.elementType);
                 if (val != null) {
-                    je.elementName = val;
+                    je.elementObject = val;
                     nodeSelected.setUserObject(je);
                 }
             }
