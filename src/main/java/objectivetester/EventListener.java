@@ -14,35 +14,35 @@ import javax.swing.tree.TreePath;
  * @author Steve
  */
 class EventListener extends MouseAdapter implements ActionListener {
-    
+
     JPopupMenu popup;
     JTree tree;
     UserInterface ui;
     int current;
     TreePath nodePath;
     DefaultMutableTreeNode nodeSelected;
-    
+
     EventListener(JPopupMenu popup, JTree tree, UserInterface ui) {
         this.popup = popup;
         this.tree = tree;
         this.ui = ui;
     }
-    
+
     @Override
     public void mouseClicked(MouseEvent e) {
     }
-    
+
     @Override
     public void mousePressed(MouseEvent e) {
         clickEvent(e);
         popupEvent(e);
     }
-    
+
     @Override
     public void mouseReleased(MouseEvent e) {
         popupEvent(e);
     }
-    
+
     private void popupEvent(MouseEvent e) {
         if (e.isPopupTrigger()) {
             //reenable all choices
@@ -63,7 +63,7 @@ class EventListener extends MouseAdapter implements ActionListener {
             popup.show(e.getComponent(), e.getX(), e.getY());
         }
     }
-    
+
     private void clickEvent(MouseEvent e) {
         nodePath = tree.getPathForLocation(e.getPoint().x, e.getPoint().y);
         if (nodePath != null) {
@@ -72,30 +72,40 @@ class EventListener extends MouseAdapter implements ActionListener {
             nodeSelected = null;
         }
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        
+
         if (e.getActionCommand().contentEquals(Const.EDIT)) {
-            JsonElement je = (JsonElement) nodeSelected.getUserObject();
-            if (!je.elementType.equals(Type.ARRAY))  {
-                String val = ui.enterValue("new " + je.elementType);
+            JsonElement element = (JsonElement) nodeSelected.getUserObject();
+            if (!element.elementType.equals(Type.ARRAY)) {
+                String val = ui.enterValue("new " + element.elementObject.getClass().getSimpleName());
                 if (val != null) {
-                    je.elementObject = val;
-                    nodeSelected.setUserObject(je);
+                    if (element.elementObject.getClass().getSimpleName().contentEquals("Integer")) {
+                        element.elementObject = Integer.parseInt(val);
+                    } else if (element.elementObject.getClass().getSimpleName().contentEquals("Boolean")) {
+                        element.elementObject = Boolean.valueOf(val);
+                    } else if (element.elementObject.getClass().getSimpleName().contentEquals("Double")) {
+                        element.elementObject = Double.parseDouble(val);
+                    } else {
+                        element.elementObject = (String) val;
+                    }
+                    nodeSelected.setUserObject(element);
+
                 }
             }
         }
-        
+
         if (e.getActionCommand().contentEquals(Const.ASSERT)) {
-            System.out.println(Const.ASSERT + " " + nodePath);
+            JsonElement element = (JsonElement) nodeSelected.getUserObject();
+            System.out.println(Const.ASSERT + " " + nodePath + " " + element.elementObject.getClass().getCanonicalName());
         }
-        
+
         if (e.getActionCommand().contentEquals(Const.INSERT)) {
         }
-        
+
         if (e.getActionCommand().contentEquals(Const.DELETE)) {
-            ui.delete(nodeSelected);            
+            ui.delete(nodeSelected);
         }
     }
 }
