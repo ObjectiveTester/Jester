@@ -81,11 +81,11 @@ class EventListener extends MouseAdapter implements ActionListener {
             if (!element.elementType.equals(Type.ARRAY)) {
                 String val = ui.enterValue("new " + element.elementObject.getClass().getSimpleName());
                 if (val != null) {
-                    if (element.elementObject.getClass().getSimpleName().contentEquals("Integer")) {
+                    if (element.elementObject.getClass() == Integer.class) {
                         element.elementObject = Integer.parseInt(val);
-                    } else if (element.elementObject.getClass().getSimpleName().contentEquals("Boolean")) {
+                    } else if (element.elementObject.getClass() == Integer.class) {
                         element.elementObject = Boolean.valueOf(val);
-                    } else if (element.elementObject.getClass().getSimpleName().contentEquals("Double")) {
+                    } else if (element.elementObject.getClass() == Integer.class) {
                         element.elementObject = Double.parseDouble(val);
                     } else {
                         element.elementObject = (String) val;
