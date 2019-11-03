@@ -36,7 +36,7 @@ class APIConnector {
     }
 
     Integer reqGet(String fullUrl, DefaultMutableTreeNode node) {
-        String data;
+        String resp;
         Integer code = 0;
 
         HttpClientBuilder builder = HttpClients.custom();
@@ -48,8 +48,8 @@ class APIConnector {
         try {
             HttpResponse response = httpclient.execute(get);
             code = response.getStatusLine().getStatusCode();
-            data = EntityUtils.toString(response.getEntity());
-            json = new JSONTokener(data).nextValue();
+            resp = EntityUtils.toString(response.getEntity());
+            json = new JSONTokener(resp).nextValue();
 
             if (json instanceof JSONArray) {
                 isArray = true;
@@ -82,8 +82,20 @@ class APIConnector {
             post.setEntity(entity);
             HttpResponse response = httpclient.execute(post);
             code = response.getStatusLine().getStatusCode();
-            data = EntityUtils.toString(response.getEntity());
-            System.out.print(data);
+            String resp = EntityUtils.toString(response.getEntity());
+            if (ui.getIgnorePref()) {
+                //System.out.print(resp);
+            } else {
+                //System.out.print(resp);
+                json = new JSONTokener(resp).nextValue();
+                if (json instanceof JSONArray) {
+                    isArray = true;
+                } else {
+                    isArray = false;
+                }
+                ui.wipe();
+                unpack(node, "", json, -1);
+            }
 
         } catch (IOException | ParseException ex) {
             System.out.println(ex);
@@ -173,7 +185,7 @@ class APIConnector {
         while (e.hasMoreElements()) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
             JsonElement element = (JsonElement) node.getUserObject();
-            if (element.elementType.equals(Type.ARRAY))  {
+            if (element.elementType.equals(Type.ARRAY)) {
                 Map<String, Object> obj = new HashMap<>();
                 parse(node, obj, "");
                 a.add(obj);
@@ -223,6 +235,18 @@ class APIConnector {
 
         }
 
+    }
+
+    void refresh(DefaultMutableTreeNode node) {
+        String data = repack(node);
+        ui.wipe();
+        if (isArray) {
+            JSONArray newjson = new JSONArray(data);
+            unpack(node, "", newjson, -1);
+        } else {
+            JSONObject newjson = new JSONObject(data);
+            unpack(node, "", newjson, -1);
+        }
     }
 
 }

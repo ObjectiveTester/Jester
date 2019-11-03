@@ -15,6 +15,8 @@ interface Const {
     
     static final String DELETE = "delete";
     
+    static final String REFRESH = "refresh";
+    
     //max text to put in a dialog box
     static final int MAX_SIZ = 2048;
 
@@ -25,4 +27,6 @@ interface Const {
     static final int POP_INS = 2;
     
     static final int POP_DEL = 3;
+    
+    static final int POP_REF = 4;
 }

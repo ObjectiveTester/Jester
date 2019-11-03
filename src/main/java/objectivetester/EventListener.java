@@ -48,8 +48,9 @@ class EventListener extends MouseAdapter implements ActionListener {
             //reenable all choices
             popup.getComponent(Const.POP_ASSERT).setEnabled(true); //assert
             popup.getComponent(Const.POP_EDIT).setEnabled(true);  //edit
-            popup.getComponent(Const.POP_INS).setEnabled(true);   //insert
+            popup.getComponent(Const.POP_INS).setEnabled(false);   //insert
             popup.getComponent(Const.POP_DEL).setEnabled(true);   //delete
+            popup.getComponent(Const.POP_REF).setEnabled(true);   //refresh
 
             nodePath = tree.getPathForLocation(e.getPoint().x, e.getPoint().y);
             if (nodePath != null) {
@@ -58,7 +59,8 @@ class EventListener extends MouseAdapter implements ActionListener {
             } else {
                 nodeSelected = null;
             }
-
+            //disable choices that are invalid for the item selected
+            
             //show the popup menu
             popup.show(e.getComponent(), e.getX(), e.getY());
         }
@@ -106,6 +108,10 @@ class EventListener extends MouseAdapter implements ActionListener {
 
         if (e.getActionCommand().contentEquals(Const.DELETE)) {
             ui.delete(nodeSelected);
+        }
+
+        if (e.getActionCommand().contentEquals(Const.REFRESH)) {
+            ui.refresh();
         }
     }
 }

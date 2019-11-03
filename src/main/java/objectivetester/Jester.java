@@ -77,17 +77,22 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         menuItem = new JMenuItem(Const.DELETE);
         menuItem.addActionListener((ActionListener) popupListener);
         popup.add(menuItem);
+        menuItem = new JMenuItem(Const.REFRESH);
+        menuItem.addActionListener((ActionListener) popupListener);
+        popup.add(menuItem);
         jTree.addMouseListener(popupListener);
 
         //get prefs
         prefs = Preferences.userRoot().node("jester");
         if (prefs.get("serviceURI", "").contentEquals("")) {
-            //prefs.putBoolean("option1", false);
+            //set defaults
+            prefs.putBoolean("optionIgnoreOther", true);
             //prefs.putBoolean("option2", false);
-            prefs.put("serviceURI", "https://api.github.com/users/objectivetester");
+            prefs.put("serviceURI", "https://httpbin.org/anything");
         }
         currentURI.setText(prefs.get("serviceURI", ""));
         serviceURI.setText((prefs.get("serviceURI", "")));
+        checkBoxIgnoreOther.setSelected(prefs.getBoolean("optionIgnoreOther", true));
         if (prefs.get("output", "").contentEquals("junit")) {
             buttonJunit.setSelected(true);
             writer = new TestWriter(this);
@@ -120,7 +125,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         labelDefuri = new javax.swing.JLabel();
         serviceURI = new javax.swing.JTextField();
         labelOpts = new javax.swing.JLabel();
-        checkBox1 = new javax.swing.JCheckBox();
+        checkBoxIgnoreOther = new javax.swing.JCheckBox();
         checkBox2 = new javax.swing.JCheckBox();
         labelOutput = new javax.swing.JLabel();
         buttonJunit = new javax.swing.JRadioButton();
@@ -261,23 +266,21 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
         panelSettings.add(labelOpts, gridBagConstraints);
 
-        checkBox1.setText("Option1");
-        checkBox1.setToolTipText("Show Element 'id'");
+        checkBoxIgnoreOther.setText("Only parse GET responses");
+        checkBoxIgnoreOther.setToolTipText("Only parse GET responses");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        panelSettings.add(checkBox1, gridBagConstraints);
-        checkBox1.getAccessibleContext().setAccessibleDescription("Show id");
+        panelSettings.add(checkBoxIgnoreOther, gridBagConstraints);
 
         checkBox2.setText("Option2");
-        checkBox2.setToolTipText("List invisible Elements");
+        checkBox2.setToolTipText("Option2");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
         panelSettings.add(checkBox2, gridBagConstraints);
-        checkBox2.getAccessibleContext().setAccessibleDescription("List Invisible");
 
         labelOutput.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         labelOutput.setText("Generated Output");
@@ -332,9 +335,9 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         dialogSettings.getContentPane().setLayout(dialogSettingsLayout);
         dialogSettingsLayout.setHorizontalGroup(
             dialogSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGap(0, 456, Short.MAX_VALUE)
             .addGroup(dialogSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(panelSettings, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))
+                .addComponent(panelSettings, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE))
         );
         dialogSettingsLayout.setVerticalGroup(
             dialogSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -483,15 +486,10 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         //update UI
         currentURI.setText(serviceURI.getText());
 
-        if (prefs.getBoolean("option1", false) && checkBox1.isSelected()) {
-        }
-        if (prefs.getBoolean("option2", false) && checkBox1.isSelected()) {
-        }
-
         //save new settings
         prefs.put("serviceURI", serviceURI.getText());
 
-        //prefs.putBoolean("option1", checkBox1.isSelected());
+        prefs.putBoolean("optionIgnoreOther", checkBoxIgnoreOther.isSelected());
         //prefs.putBoolean("option2", checkBox2.isSelected());
         if (buttonJunit.isSelected()) {
             prefs.put("output", "junit");
@@ -503,8 +501,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void buttonGETActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGETActionPerformed
-        rootNode.removeAllChildren(); //this removes all nodes
-        treeModel.reload(); //this notifies the listeners and changes the GUI
+        wipe();
         System.out.print("GET " + currentURI.getText() + " ");
         System.out.println(apiCon.reqGet(currentURI.getText(), rootNode));
     }//GEN-LAST:event_buttonGETActionPerformed
@@ -551,8 +548,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         // TODO add your handling code here:
         //restore original settings
         serviceURI.setText((prefs.get("serviceURI", "")));
-        //checkBox1.setSelected(prefs.getBoolean("showId", true));
-        //checkBox2.setSelected(prefs.getBoolean("showInvis", true));
+        checkBoxIgnoreOther.setSelected(prefs.getBoolean("optionIgnoreOther", true));
+        //checkBox2.setSelected(prefs.getBoolean("option2", true));
 
         dialogSettings.setVisible(false);
     }//GEN-LAST:event_buttonCancelActionPerformed
@@ -609,8 +606,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private javax.swing.JButton buttonPOST;
     private javax.swing.JButton buttonSave;
     private javax.swing.ButtonGroup buttonsOutput;
-    private javax.swing.JCheckBox checkBox1;
     private javax.swing.JCheckBox checkBox2;
+    private javax.swing.JCheckBox checkBoxIgnoreOther;
     private javax.swing.JTextArea code;
     private javax.swing.JTextField currentURI;
     private javax.swing.JDialog dialogAbout;
@@ -694,4 +691,21 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     @Override
     public void edit(DefaultMutableTreeNode target, String value) {
     }
+
+    @Override
+    public boolean getIgnorePref() {
+        return prefs.getBoolean("optionIgnoreOther", true);
+    }
+
+    @Override
+    public void refresh() {
+        apiCon.refresh(rootNode);
+    }
+
+    @Override
+    public void wipe() {
+        rootNode.removeAllChildren(); //this removes all nodes
+        treeModel.reload(); //this notifies the listeners and changes the GUI
+    }
+
 }

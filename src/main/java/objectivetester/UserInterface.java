@@ -21,4 +21,10 @@ interface UserInterface {
     void delete(DefaultMutableTreeNode target);
     
     void edit(DefaultMutableTreeNode target, String value);
+    
+    void wipe();
+    
+    void refresh();
+    
+    boolean getIgnorePref();
 }
