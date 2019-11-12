@@ -96,7 +96,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         if (prefs.get("output", "").contentEquals("junit")) {
             buttonJunit.setSelected(true);
             writer = new TestWriter(this);
-            //writer.writeHeader();
+            writer.writeHeader();
         }
         if (prefs.get("output", "").contentEquals("junit5")) {
             buttonJunit5.setSelected(true);
@@ -566,7 +566,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
     private void buttonDELETEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDELETEActionPerformed
         // TODO add your handling code here:
-        addCode(apiCon.repack(rootNode));
+        System.out.println("rebuilt:"+apiCon.repack(rootNode));
     }//GEN-LAST:event_buttonDELETEActionPerformed
 
     /**
