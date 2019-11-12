@@ -43,9 +43,8 @@ class APIConnector {
         builder.setRedirectStrategy(new LaxRedirectStrategy());
         HttpClient httpclient = builder.build();
 
-        HttpGet get = new HttpGet(fullUrl);
-
         try {
+            HttpGet get = new HttpGet(fullUrl.strip());
             HttpResponse response = httpclient.execute(get);
             code = response.getStatusLine().getStatusCode();
             resp = EntityUtils.toString(response.getEntity());
@@ -59,8 +58,9 @@ class APIConnector {
 
             unpack(node, "", json, -1);
 
-        } catch (IOException | ParseException ex) {
-            System.out.println(ex);
+        } catch (IOException | ParseException | IllegalArgumentException ex) {
+            //System.out.print(ex.getMessage());
+            ui.errorMessage(ex.getMessage());
         }
 
         return code;
@@ -75,14 +75,14 @@ class APIConnector {
         HttpClientBuilder builder = HttpClients.custom();
         builder.setRedirectStrategy(new LaxRedirectStrategy());
         HttpClient httpclient = builder.build();
-
-        HttpPost post = new HttpPost(fullUrl);
-
+        
         try {
+            HttpPost post = new HttpPost(fullUrl.strip());
             post.setEntity(entity);
             HttpResponse response = httpclient.execute(post);
             code = response.getStatusLine().getStatusCode();
             String resp = EntityUtils.toString(response.getEntity());
+            
             if (ui.getIgnorePref()) {
                 //System.out.print(resp);
             } else {
@@ -93,12 +93,14 @@ class APIConnector {
                 } else {
                     isArray = false;
                 }
+                
                 ui.wipe();
                 unpack(node, "", json, -1);
             }
 
-        } catch (IOException | ParseException ex) {
-            System.out.println(ex);
+        } catch (IOException | ParseException | IllegalArgumentException ex) {
+            //System.out.print(ex.getMessage());
+            ui.errorMessage(ex.getMessage());
         }
 
         return code;
