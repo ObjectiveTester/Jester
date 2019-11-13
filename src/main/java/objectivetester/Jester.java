@@ -503,7 +503,13 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private void buttonGETActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGETActionPerformed
         wipe();
         System.out.print("GET " + currentURI.getText() + " ");
-        System.out.println(apiCon.reqGet(currentURI.getText(), rootNode));
+        int respCode = apiCon.reqGet(currentURI.getText(), rootNode);
+        System.out.println(respCode);
+        
+        //this is very simple for now
+        writer.writeStart();
+        writer.writeGet(currentURI.getText().strip(), respCode);
+        writer.writeEnd();
     }//GEN-LAST:event_buttonGETActionPerformed
 
     private void labelLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelLinkMouseClicked
@@ -675,11 +681,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     @Override
     public void actionPerformed(ActionEvent ae) {
         System.out.println("ae:" + ae);
-    }
-
-    @Override
-    public void writeHeader() {
-        writer.writeHeader();
     }
 
     @Override

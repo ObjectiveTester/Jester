@@ -16,8 +16,6 @@ interface UserInterface {
 
     void errorMessage(String message);
     
-    void writeHeader();
-    
     void delete(DefaultMutableTreeNode target);
     
     void edit(DefaultMutableTreeNode target, String value);

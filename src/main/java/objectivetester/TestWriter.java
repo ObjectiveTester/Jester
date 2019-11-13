@@ -17,6 +17,7 @@ class TestWriter extends DefaultWriter {
     void writeHeader() {
 
         ui.addCode("import static io.restassured.RestAssured.given;\n"
+                + "import io.restassured.response.Response;\n"
                 + "import static org.hamcrest.Matchers.equalTo;\n"
                 + "import static org.hamcrest.Matchers.is;\n"
                 + "import org.junit.After;\n"
@@ -24,10 +25,11 @@ class TestWriter extends DefaultWriter {
                 + "import org.junit.Before;\n"
                 + "import org.junit.BeforeClass;\n"
                 + "import org.junit.Test;\n"
-                + "import static org.junit.Assert.*;"
+                + "import static org.junit.Assert.*;\n"
                 + ""
-                + ""
+                + "\n"
                 + "public class RecordedTest {\n"
+                + "    Response response = null;\n"
                 + "\n"
                 + "    public RecordedTest() {\n"
                 + "    }\n"
@@ -63,6 +65,13 @@ class TestWriter extends DefaultWriter {
         }
         ui.insertCode("\n        //assert:" + value + "\n"
                 // some code
+                + "", footer);
+    }
+
+    void writeGet(String url, int code) {
+        ui.insertCode("\n        //get:" + url + "\n"
+                + "        response = given().when().get(\"" + url + "\");\n"
+                + "        assertEquals(" + code + ", response.getStatusCode());\n"
                 + "", footer);
     }
 

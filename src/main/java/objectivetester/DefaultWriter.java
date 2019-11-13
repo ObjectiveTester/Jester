@@ -11,4 +11,10 @@ public class DefaultWriter {
 
     void writeHeader() {}
     
+    void writeStart() {}
+    
+    void writeEnd() {}
+    
+    void writeGet(String url, int code) {}
+    
 }
