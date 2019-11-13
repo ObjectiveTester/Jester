@@ -60,7 +60,7 @@ class EventListener extends MouseAdapter implements ActionListener {
                 nodeSelected = null;
             }
             //disable choices that are invalid for the item selected
-            
+
             //show the popup menu
             popup.show(e.getComponent(), e.getX(), e.getY());
         }
@@ -79,39 +79,48 @@ class EventListener extends MouseAdapter implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         if (e.getActionCommand().contentEquals(Const.EDIT)) {
-            JsonElement element = (JsonElement) nodeSelected.getUserObject();
-            if (!element.elementType.equals(Type.ARRAY)) {
-                String val = ui.enterValue("new " + element.elementObject.getClass().getSimpleName());
-                if (val != null) {
-                    if (element.elementObject.getClass() == Integer.class) {
-                        element.elementObject = Integer.parseInt(val);
-                    } else if (element.elementObject.getClass() == Boolean.class) {
-                        element.elementObject = Boolean.valueOf(val);
-                    } else if (element.elementObject.getClass() == Double.class) {
-                        element.elementObject = Double.parseDouble(val);
-                    } else {
-                        element.elementObject = (String) val;
-                    }
-                    nodeSelected.setUserObject(element);
+            if (nodeSelected != null && !nodeSelected.isRoot()) {
+                JsonElement element = (JsonElement) nodeSelected.getUserObject();
+                if (!element.elementType.equals(Type.ARRAY)) {
+                    String val = ui.enterValue("new " + element.elementObject.getClass().getSimpleName());
+                    if (val != null) {
+                        if (element.elementObject.getClass() == Integer.class) {
+                            element.elementObject = Integer.parseInt(val);
+                        } else if (element.elementObject.getClass() == Boolean.class) {
+                            element.elementObject = Boolean.valueOf(val);
+                        } else if (element.elementObject.getClass() == Double.class) {
+                            element.elementObject = Double.parseDouble(val);
+                        } else {
+                            element.elementObject = (String) val;
+                        }
+                        nodeSelected.setUserObject(element);
 
+                    }
                 }
             }
         }
 
         if (e.getActionCommand().contentEquals(Const.ASSERT)) {
-            JsonElement element = (JsonElement) nodeSelected.getUserObject();
-            System.out.println(Const.ASSERT + " " + nodePath + " " + element.elementObject.getClass().getCanonicalName());
+            if (nodeSelected != null && !nodeSelected.isRoot()) {
+                JsonElement element = (JsonElement) nodeSelected.getUserObject();
+                System.out.println(Const.ASSERT + " " + nodePath + " " + element.elementObject.getClass().getCanonicalName());
+            }
         }
 
         if (e.getActionCommand().contentEquals(Const.INSERT)) {
+            if (nodeSelected != null && !nodeSelected.isRoot()) {
+
+            }
         }
 
         if (e.getActionCommand().contentEquals(Const.DELETE)) {
-            ui.delete(nodeSelected);
-        }
+            if (nodeSelected != null && !nodeSelected.isRoot()) {
+                ui.delete(nodeSelected);
+            }
 
-        if (e.getActionCommand().contentEquals(Const.REFRESH)) {
-            ui.refresh();
+            if (e.getActionCommand().contentEquals(Const.REFRESH)) {
+                ui.refresh();
+            }
         }
     }
 }

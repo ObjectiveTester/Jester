@@ -75,14 +75,14 @@ class APIConnector {
         HttpClientBuilder builder = HttpClients.custom();
         builder.setRedirectStrategy(new LaxRedirectStrategy());
         HttpClient httpclient = builder.build();
-        
+
         try {
             HttpPost post = new HttpPost(fullUrl.strip());
             post.setEntity(entity);
             HttpResponse response = httpclient.execute(post);
             code = response.getStatusLine().getStatusCode();
             String resp = EntityUtils.toString(response.getEntity());
-            
+
             if (ui.getIgnorePref()) {
                 //System.out.print(resp);
             } else {
@@ -93,7 +93,7 @@ class APIConnector {
                 } else {
                     isArray = false;
                 }
-                
+
                 ui.wipe();
                 unpack(node, "", json, -1);
             }
@@ -111,7 +111,9 @@ class APIConnector {
         int innerIndex = idx;
 
         if (value instanceof JSONArray) {
-
+            if (parent.isRoot()) {
+                parent.setUserObject("Array");
+            }
             DefaultMutableTreeNode arraynode = parent;
             if (!key.isEmpty()) {
                 arraynode = new DefaultMutableTreeNode(new JsonElement(key, Type.ARRAYKEY));
@@ -130,7 +132,9 @@ class APIConnector {
             }
 
         } else if (value instanceof JSONObject) {
-
+            if (parent.isRoot()) {
+                parent.setUserObject("Object");
+            }
             DefaultMutableTreeNode objectnode = parent;
             if (!key.isEmpty()) {
                 if (innerIndex > -1) {

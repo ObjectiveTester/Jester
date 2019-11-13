@@ -43,7 +43,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     public Jester() {
         icon = new ImageIcon(getClass().getResource("/images/wisard.png"));
 
-        rootNode = new DefaultMutableTreeNode("JSON");
+        rootNode = new DefaultMutableTreeNode("Object");
         treeModel = new DefaultTreeModel(rootNode);
         jTree = new JTree(treeModel);
 
@@ -88,6 +88,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             //set defaults
             prefs.putBoolean("optionIgnoreOther", true);
             //prefs.putBoolean("option2", false);
+            prefs.put("output", "junit");
             prefs.put("serviceURI", "https://httpbin.org/anything");
         }
         currentURI.setText(prefs.get("serviceURI", ""));
@@ -100,6 +101,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         }
         if (prefs.get("output", "").contentEquals("junit5")) {
             buttonJunit5.setSelected(true);
+            writer = new TestWriter(this);
+            writer.writeHeader();
         }
     }
 
@@ -505,7 +508,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         System.out.print("GET " + currentURI.getText() + " ");
         int respCode = apiCon.reqGet(currentURI.getText(), rootNode);
         System.out.println(respCode);
-        
+
         //this is very simple for now
         writer.writeStart();
         writer.writeGet(currentURI.getText().strip(), respCode);
@@ -572,7 +575,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
     private void buttonDELETEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDELETEActionPerformed
         // TODO add your handling code here:
-        System.out.println("rebuilt:"+apiCon.repack(rootNode));
+        System.out.println("rebuilt:" + apiCon.repack(rootNode));
     }//GEN-LAST:event_buttonDELETEActionPerformed
 
     /**
