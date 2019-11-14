@@ -152,6 +152,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         textConsole = new javax.swing.JTextArea();
         menuBar = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
+        menuImport = new javax.swing.JMenuItem();
         menuExit = new javax.swing.JMenuItem();
         menuEdit = new javax.swing.JMenu();
         menuSettings = new javax.swing.JMenuItem();
@@ -444,6 +445,14 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
         menuFile.setText("File");
 
+        menuImport.setText("Import");
+        menuImport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuImportActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuImport);
+
         menuExit.setText("Exit");
         menuExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -581,6 +590,14 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         System.out.println("DELETE not implemented");
     }//GEN-LAST:event_buttonDELETEActionPerformed
 
+    private void menuImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuImportActionPerformed
+        // TODO add your handling code here:
+        String rawjson = enterValue("import JSON data");
+        if (rawjson != null) {
+            apiCon.importData(rawjson, rootNode);
+        }
+    }//GEN-LAST:event_menuImportActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -640,6 +657,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private javax.swing.JMenuItem menuExit;
     private javax.swing.JMenu menuFile;
     private javax.swing.JMenu menuHelp;
+    private javax.swing.JMenuItem menuImport;
     private javax.swing.JMenuItem menuSettings;
     private javax.swing.JScrollPane paneCode;
     private javax.swing.JScrollPane paneConsole;
