@@ -28,7 +28,6 @@ import org.json.JSONTokener;
 class APIConnector {
 
     UserInterface ui;
-    Object json;
     Boolean isArray = false;
 
     APIConnector(UserInterface ui) {
@@ -36,6 +35,7 @@ class APIConnector {
     }
 
     Integer reqGet(String fullUrl, DefaultMutableTreeNode node) {
+        Object json;
         String resp;
         Integer code = 0;
 
@@ -69,10 +69,11 @@ class APIConnector {
     }
 
     Integer reqPost(String fullUrl, DefaultMutableTreeNode node) {
+        Object json;
+        Integer code = 0;
 
         String data = repack(node);
         StringEntity entity = new StringEntity(data, ContentType.APPLICATION_JSON);
-        Integer code = 0;
 
         HttpClientBuilder builder = HttpClients.custom();
         builder.setRedirectStrategy(new LaxRedirectStrategy());
@@ -89,11 +90,15 @@ class APIConnector {
                 //System.out.print(resp);
             } else {
                 //System.out.print(resp);
+
                 json = new JSONTokener(resp).nextValue();
+
                 if (json instanceof JSONArray) {
                     isArray = true;
+                    node.setUserObject("Array");
                 } else {
                     isArray = false;
+                    node.setUserObject("Object");
                 }
 
                 ui.wipe();
@@ -242,7 +247,7 @@ class APIConnector {
     void refresh(DefaultMutableTreeNode node) {
         System.out.println("ref3");
         String data = repack(node);
-        System.out.println("data"+data);
+        System.out.println("data" + data);
         ui.wipe();
         if (isArray) {
             JSONArray newjson = new JSONArray(data);
@@ -252,5 +257,23 @@ class APIConnector {
             unpack(node, "", newjson, -1);
         }
     }
+
+    void importData(String rawjson, DefaultMutableTreeNode node) {
+        
+        Object json = new JSONTokener(rawjson).nextValue();
+        
+        if (json instanceof JSONArray) {
+            isArray = true;
+            node.setUserObject("Array");
+        } else {
+            isArray = false;
+            node.setUserObject("Object");
+        }
+
+        ui.wipe();
+        unpack(node, "", json, -1);
+    }
+
+
 
 }
