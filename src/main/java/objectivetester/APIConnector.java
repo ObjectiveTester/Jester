@@ -52,8 +52,10 @@ class APIConnector {
 
             if (json instanceof JSONArray) {
                 isArray = true;
+                node.setUserObject("Array");
             } else {
                 isArray = false;
+                node.setUserObject("Object");
             }
 
             unpack(node, "", json, -1);
@@ -111,9 +113,6 @@ class APIConnector {
         int innerIndex = idx;
 
         if (value instanceof JSONArray) {
-            if (parent.isRoot()) {
-                parent.setUserObject("Array");
-            }
             DefaultMutableTreeNode arraynode = parent;
             if (!key.isEmpty()) {
                 arraynode = new DefaultMutableTreeNode(new JsonElement(key, Type.ARRAYKEY));
@@ -132,9 +131,6 @@ class APIConnector {
             }
 
         } else if (value instanceof JSONObject) {
-            if (parent.isRoot()) {
-                parent.setUserObject("Object");
-            }
             DefaultMutableTreeNode objectnode = parent;
             if (!key.isEmpty()) {
                 if (innerIndex > -1) {
@@ -244,7 +240,9 @@ class APIConnector {
     }
 
     void refresh(DefaultMutableTreeNode node) {
+        System.out.println("ref3");
         String data = repack(node);
+        System.out.println("data"+data);
         ui.wipe();
         if (isArray) {
             JSONArray newjson = new JSONArray(data);

@@ -48,7 +48,8 @@ class EventListener extends MouseAdapter implements ActionListener {
             //reenable all choices
             popup.getComponent(Const.POP_ASSERT).setEnabled(true); //assert
             popup.getComponent(Const.POP_EDIT).setEnabled(true);  //edit
-            popup.getComponent(Const.POP_INS).setEnabled(false);   //insert
+            popup.getComponent(Const.POP_INS_K).setEnabled(true);   //insert key
+            popup.getComponent(Const.POP_INS_V).setEnabled(true);   //insert value
             popup.getComponent(Const.POP_DEL).setEnabled(true);   //delete
             popup.getComponent(Const.POP_REF).setEnabled(true);   //refresh
 
@@ -60,6 +61,8 @@ class EventListener extends MouseAdapter implements ActionListener {
                 nodeSelected = null;
             }
             //disable choices that are invalid for the item selected
+            //for example, empty space or value, etc.
+            //
 
             //show the popup menu
             popup.show(e.getComponent(), e.getX(), e.getY());
@@ -107,9 +110,54 @@ class EventListener extends MouseAdapter implements ActionListener {
             }
         }
 
-        if (e.getActionCommand().contentEquals(Const.INSERT)) {
-            if (nodeSelected != null && !nodeSelected.isRoot()) {
+        if (e.getActionCommand().contentEquals(Const.INSERTK)) {
+            if (nodeSelected != null) {
+                String val = ui.enterValue("new key");
+                if (val != null) {
+                    DefaultMutableTreeNode objectnode = new DefaultMutableTreeNode(new JsonElement(val, Type.KEY));
+                    nodeSelected.add(objectnode);
+                }
+            }
+        }
 
+        if (e.getActionCommand().contentEquals(Const.INSERTV)) {
+            //do a lot more checking here
+            //do not add if key already has a value
+            //
+            if (nodeSelected != null) {
+                Object rawVal = null;
+                String val = ui.enterValue("new value");
+                if (val != null) {
+
+                    //integer?
+                    try {
+                        Integer intVal = Integer.parseInt(val);
+                        rawVal = intVal;
+                    } catch (NumberFormatException nfe) {
+                    }
+
+                    //double?
+                    if (rawVal == null) {
+                        try {
+                            Double dblVal = Double.parseDouble(val);
+                            rawVal = dblVal;
+                        } catch (NumberFormatException nfe) {
+                        }
+                    }
+
+                    //boolean or string?
+                    if (rawVal == null) {
+                        if ((val.equals("true")) || (val.equals("false"))) {
+                            rawVal = Boolean.valueOf(val);
+                        } else {
+                            rawVal = val;
+                        }
+                    }
+
+                    DefaultMutableTreeNode objectnode = new DefaultMutableTreeNode(new JsonElement(rawVal, Type.VALUE));
+
+                    nodeSelected.add(objectnode);
+                }
             }
         }
 
@@ -117,10 +165,11 @@ class EventListener extends MouseAdapter implements ActionListener {
             if (nodeSelected != null && !nodeSelected.isRoot()) {
                 ui.delete(nodeSelected);
             }
+        }
 
-            if (e.getActionCommand().contentEquals(Const.REFRESH)) {
-                ui.refresh();
-            }
+        if (e.getActionCommand().contentEquals(Const.REFRESH)) {
+            System.out.println("ref");
+            ui.refresh();
         }
     }
 }

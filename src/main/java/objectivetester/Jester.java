@@ -71,7 +71,10 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         menuItem = new JMenuItem(Const.EDIT);
         menuItem.addActionListener((ActionListener) popupListener);
         popup.add(menuItem);
-        menuItem = new JMenuItem(Const.INSERT);
+        menuItem = new JMenuItem(Const.INSERTK);
+        menuItem.addActionListener((ActionListener) popupListener);
+        popup.add(menuItem);
+        menuItem = new JMenuItem(Const.INSERTV);
         menuItem.addActionListener((ActionListener) popupListener);
         popup.add(menuItem);
         menuItem = new JMenuItem(Const.DELETE);
@@ -575,7 +578,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
     private void buttonDELETEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDELETEActionPerformed
         // TODO add your handling code here:
-        System.out.println("rebuilt:" + apiCon.repack(rootNode));
+        System.out.println("DELETE not implemented");
     }//GEN-LAST:event_buttonDELETEActionPerformed
 
     /**

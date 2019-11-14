@@ -11,7 +11,9 @@ interface Const {
     
     static final String EDIT = "edit";
     
-    static final String INSERT = "insert";
+    static final String INSERTK = "insert key";
+    
+    static final String INSERTV = "insert value";
     
     static final String DELETE = "delete";
     
@@ -24,9 +26,11 @@ interface Const {
 
     static final int POP_EDIT = 1;
     
-    static final int POP_INS = 2;
+    static final int POP_INS_K = 2;
     
-    static final int POP_DEL = 3;
+    static final int POP_INS_V = 3;
     
-    static final int POP_REF = 4;
+    static final int POP_DEL = 4;
+    
+    static final int POP_REF = 5;
 }
