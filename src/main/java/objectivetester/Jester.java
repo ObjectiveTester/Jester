@@ -89,7 +89,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         prefs = Preferences.userRoot().node("jester");
         if (prefs.get("serviceURI", "").contentEquals("")) {
             //set defaults
-            prefs.putBoolean("optionIgnoreOther", true);
+            prefs.putBoolean("optionIgnoreOther", false);
             //prefs.putBoolean("option2", false);
             prefs.put("output", "junit");
             prefs.put("serviceURI", "https://httpbin.org/anything");
@@ -582,7 +582,18 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private void buttonPOSTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPOSTActionPerformed
         // TODO add your handling code here:
         System.out.print("POST " + currentURI.getText() + " ");
-        System.out.println(apiCon.reqPost(currentURI.getText(), rootNode));
+        
+        //save the outgoing data with escaped doube quotes
+        String data = apiCon.repack(rootNode).replace("\"", "\\\"");
+  
+        int respCode = apiCon.reqPost(currentURI.getText(), rootNode);
+        System.out.println(respCode);
+
+        //this is very simple for now
+        writer.writeStart();
+        writer.writePost(currentURI.getText().strip(), data, respCode);
+        writer.writeEnd();
+        
     }//GEN-LAST:event_buttonPOSTActionPerformed
 
     private void buttonDELETEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDELETEActionPerformed

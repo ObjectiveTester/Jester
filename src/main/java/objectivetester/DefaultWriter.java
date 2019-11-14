@@ -17,4 +17,6 @@ public class DefaultWriter {
     
     void writeGet(String url, int code) {}
     
+    void writePost(String url, String data, int code) {}
+    
 }

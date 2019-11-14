@@ -75,6 +75,15 @@ class TestWriter extends DefaultWriter {
                 + "", footer);
     }
 
+    void writePost(String url, String data, int code) {
+        ui.insertCode("\n        //post:" + url + "\n"
+                + "        String data = \"" + data + "\";\n"
+                + "        response = given().contentType(\"application/json\")"
+                + ".body(data).post(\"" + url + "\");\n"
+                + "        assertEquals(" + code + ", response.getStatusCode());\n"
+                + "", footer);
+    }
+
     void writeEnd() {
         ui.insertCode("\n    }\n", footer);
     }
