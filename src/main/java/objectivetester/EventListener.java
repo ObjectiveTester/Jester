@@ -168,7 +168,6 @@ class EventListener extends MouseAdapter implements ActionListener {
         }
 
         if (e.getActionCommand().contentEquals(Const.REFRESH)) {
-            System.out.println("ref");
             ui.refresh();
         }
     }

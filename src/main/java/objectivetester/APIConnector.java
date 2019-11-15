@@ -245,9 +245,8 @@ class APIConnector {
     }
 
     void refresh(DefaultMutableTreeNode node) {
-        System.out.println("ref3");
         String data = repack(node);
-        System.out.println("data" + data);
+        System.out.println("data:" + data);
         ui.wipe();
         if (isArray) {
             JSONArray newjson = new JSONArray(data);
