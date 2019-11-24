@@ -104,7 +104,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         }
         if (prefs.get("output", "").contentEquals("junit5")) {
             buttonJunit5.setSelected(true);
-            writer = new TestWriter(this);
+            writer = new TestWriter5(this);
             writer.writeHeader();
         }
     }
@@ -565,10 +565,10 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private void buttonPOSTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPOSTActionPerformed
         // TODO add your handling code here:
         System.out.print("POST " + currentURI.getText().trim() + " ");
-        
+
         //save the outgoing data with escaped doube quotes
         String data = apiCon.repack(rootNode).replace("\"", "\\\"");
-  
+
         int respCode = apiCon.reqPost(currentURI.getText().trim(), rootNode);
         System.out.println(respCode);
 
@@ -576,7 +576,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         writer.writeStart();
         writer.writePost(currentURI.getText().trim(), data, respCode);
         writer.writeEnd();
-        
+
     }//GEN-LAST:event_buttonPOSTActionPerformed
 
     private void buttonDELETEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDELETEActionPerformed
@@ -680,6 +680,11 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         }
         code.insert(fragment, point - 1);
 
+    }
+
+    @Override
+    public void writeAssert(String node, String value) {
+        writer.writeAssert(node, value);
     }
 
     @Override

@@ -4,11 +4,11 @@ package objectivetester;
  *
  * @author Steve
  */
-class TestWriter extends DefaultWriter {
+class TestWriter5 extends DefaultWriter {
 
     private int n;
 
-    TestWriter(UserInterface ui) {
+    TestWriter5(UserInterface ui) {
         this.n = 0;
         this.ui = ui;
     }
@@ -18,12 +18,16 @@ class TestWriter extends DefaultWriter {
 
         ui.addCode("import static io.restassured.RestAssured.given;\n"
                 + "import static org.hamcrest.Matchers.equalTo;\n"
-                + "import org.junit.After;\n"
-                + "import org.junit.AfterClass;\n"
-                + "import org.junit.Before;\n"
-                + "import org.junit.BeforeClass;\n"
-                + "import org.junit.Test;\n"
-                + "import static org.junit.Assert.*;\n"
+                + "import org.junit.jupiter.api.AfterAll;\n"
+                + "import org.junit.jupiter.api.AfterEach;\n"
+                + "import org.junit.jupiter.api.BeforeAll;\n"
+                + "import org.junit.jupiter.api.BeforeEach;\n"
+                + "import org.junit.jupiter.api.Test;\n"
+                + "import static org.junit.jupiter.api.Assertions.*;\n"
+                + "import org.junit.jupiter.api.TestMethodOrder;\n"
+                + "import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;\n"
+                + "import org.junit.jupiter.api.Order;\n\n"
+                + "@TestMethodOrder(OrderAnnotation.class)\n"
                 + ""
                 + "\n"
                 + "public class RecordedTest {\n"
@@ -31,20 +35,20 @@ class TestWriter extends DefaultWriter {
                 + "    public RecordedTest() {\n"
                 + "    }\n"
                 + "\n"
-                + "    @BeforeClass\n"
-                + "    public static void setUpClass() {\n"
+                + "    @BeforeAll\n"
+                + "    public static void setUp() {\n"
                 + "    }\n"
                 + "\n"
-                + "    @AfterClass\n"
-                + "    public static void tearDownClass() {\n"
+                + "    @AfterAll\n"
+                + "    public static void tearDown() {\n"
                 + "    }\n"
                 + "\n"
-                + "    @Before\n"
-                + "    public void setUp() {\n"
+                + "    @BeforeEach\n"
+                + "    public void setUpEach() {\n"
                 + "    }\n"
                 + "\n"
-                + "    @After\n"
-                + "    public void tearDown() {\n"
+                + "    @AfterEach\n"
+                + "    public void tearDownEach() {\n"
                 + "    }\n"
                 + "\n}");
         footer = 2; //lines from the insert point to the bottom

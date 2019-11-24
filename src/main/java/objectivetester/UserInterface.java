@@ -25,4 +25,7 @@ interface UserInterface {
     void refresh();
     
     boolean getIgnorePref();
+    
+    void writeAssert(String node, String value);
+    
 }

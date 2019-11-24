@@ -19,4 +19,6 @@ public class DefaultWriter {
     
     void writePost(String url, String data, int code) {}
     
+    void writeAssert(String node, String value) {}
+    
 }
