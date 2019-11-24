@@ -250,11 +250,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         serviceURI.setToolTipText("Default URI");
         serviceURI.setMinimumSize(new java.awt.Dimension(166, 20));
         serviceURI.setName(""); // NOI18N
-        serviceURI.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serviceURIActionPerformed(evt);
-            }
-        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -370,11 +365,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         currentURI.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         currentURI.setMinimumSize(new java.awt.Dimension(6, 15));
         currentURI.setPreferredSize(new java.awt.Dimension(12, 20));
-        currentURI.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                currentURIActionPerformed(evt);
-            }
-        });
         jToolBar1.add(currentURI);
         currentURI.getAccessibleContext().setAccessibleName("URI");
 
@@ -492,17 +482,13 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void currentURIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_currentURIActionPerformed
-        buttonGET.doClick();
-    }//GEN-LAST:event_currentURIActionPerformed
-
     private void buttonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSaveActionPerformed
 
         //update UI
         currentURI.setText(serviceURI.getText());
 
         //save new settings
-        prefs.put("serviceURI", serviceURI.getText());
+        prefs.put("serviceURI", serviceURI.getText().trim());
 
         prefs.putBoolean("optionIgnoreOther", checkBoxIgnoreOther.isSelected());
         //prefs.putBoolean("option2", checkBox2.isSelected());
@@ -517,13 +503,13 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
     private void buttonGETActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGETActionPerformed
         wipe();
-        System.out.print("GET " + currentURI.getText() + " ");
-        int respCode = apiCon.reqGet(currentURI.getText(), rootNode);
+        System.out.print("GET " + currentURI.getText().trim() + " ");
+        int respCode = apiCon.reqGet(currentURI.getText().trim(), rootNode);
         System.out.println(respCode);
 
         //this is very simple for now
         writer.writeStart();
-        writer.writeGet(currentURI.getText().strip(), respCode);
+        writer.writeGet(currentURI.getText().trim(), respCode);
         writer.writeEnd();
     }//GEN-LAST:event_buttonGETActionPerformed
 
@@ -548,6 +534,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private void menuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuExitActionPerformed
         // TODO add your handling code here:
         dispose();
+        System.exit(0);
     }//GEN-LAST:event_menuExitActionPerformed
 
     private void menuSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSettingsActionPerformed
@@ -575,23 +562,19 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         dialogSettings.setVisible(false);
     }//GEN-LAST:event_buttonCancelActionPerformed
 
-    private void serviceURIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serviceURIActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_serviceURIActionPerformed
-
     private void buttonPOSTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPOSTActionPerformed
         // TODO add your handling code here:
-        System.out.print("POST " + currentURI.getText() + " ");
+        System.out.print("POST " + currentURI.getText().trim() + " ");
         
         //save the outgoing data with escaped doube quotes
         String data = apiCon.repack(rootNode).replace("\"", "\\\"");
   
-        int respCode = apiCon.reqPost(currentURI.getText(), rootNode);
+        int respCode = apiCon.reqPost(currentURI.getText().trim(), rootNode);
         System.out.println(respCode);
 
         //this is very simple for now
         writer.writeStart();
-        writer.writePost(currentURI.getText().strip(), data, respCode);
+        writer.writePost(currentURI.getText().trim(), data, respCode);
         writer.writeEnd();
         
     }//GEN-LAST:event_buttonPOSTActionPerformed

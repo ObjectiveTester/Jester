@@ -44,7 +44,7 @@ class APIConnector {
         HttpClient httpclient = builder.build();
 
         try {
-            HttpGet get = new HttpGet(fullUrl.strip());
+            HttpGet get = new HttpGet(fullUrl);
             HttpResponse response = httpclient.execute(get);
             code = response.getStatusLine().getStatusCode();
             resp = EntityUtils.toString(response.getEntity());
@@ -80,7 +80,7 @@ class APIConnector {
         HttpClient httpclient = builder.build();
 
         try {
-            HttpPost post = new HttpPost(fullUrl.strip());
+            HttpPost post = new HttpPost(fullUrl);
             post.setEntity(entity);
             HttpResponse response = httpclient.execute(post);
             code = response.getStatusLine().getStatusCode();
