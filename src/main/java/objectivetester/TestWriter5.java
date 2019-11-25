@@ -61,7 +61,6 @@ class TestWriter5 extends DefaultWriter {
     }
 
     void writeAssert(String node, String value) {
-        System.out.println("writeassert");
         ui.insertCode("\n        //assert:" + value + "\n"
                 // some code
                 + "        .body(\"" + node + "\", equalTo(\"" + value + "\"))"
