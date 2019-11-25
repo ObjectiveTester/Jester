@@ -32,7 +32,7 @@ Once built, either double-click 'Jester-0.01.jar' in the 'target' folder or star
 
 Testing Jester
 ============
-Functionality is limited to POST and GET for now:
+Functionality is limited to POST, GET and ASSERT for now:
 
 POST
 ----
@@ -44,6 +44,9 @@ GET
 ---
 Enter a URI into the text field and click 'GET'. The treeview will (or should) be updated with a graphical representation of the response. You can now edit this and POST.
 
-In the future you will be able to assert on values withing the response.
+ASSERT
+------
+Right-click on a value in the tree and assert on it.
+
 
 In the right hand frame, Java statements are generated. This should be runnable from an IDE, etc. after a little cleanup.
