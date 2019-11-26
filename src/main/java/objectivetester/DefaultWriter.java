@@ -42,6 +42,13 @@ public class DefaultWriter {
                 + "", footer);
     }
 
+    void writeDelete(String url, int code) {
+        ui.insertCode("\n        //delete:" + url + "\n"
+                + "        given().when().delete(\"" + url + "\").then()\n\n\n"
+                + "        .statusCode(" + code + ");\n"
+                + "", footer);
+    }
+
     void writeEnd() {
         ui.insertCode("\n    }\n", footer);
     }

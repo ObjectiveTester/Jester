@@ -36,6 +36,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private final APIConnector apiCon = new APIConnector(this);
     DefaultWriter writer;
     private final Preferences prefs;
+    String lastUsedURI = "";
 
     /**
      * Creates new form
@@ -493,24 +494,44 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         prefs.putBoolean("optionIgnoreOther", checkBoxIgnoreOther.isSelected());
         //prefs.putBoolean("option2", checkBox2.isSelected());
         if (buttonJunit.isSelected()) {
+            //if the output type has changed, reset
+            if (prefs.get("output", "").contentEquals("junit5")) {
+                code.setText("");
+                writer = new TestWriter(this);
+                writer.writeHeader();
+            }
             prefs.put("output", "junit");
         }
         if (buttonJunit5.isSelected()) {
+            //if the output type has changed, reset
+            if (prefs.get("output", "").contentEquals("junit")) {
+                code.setText("");
+                writer = new TestWriter5(this);
+                writer.writeHeader();
+            }
             prefs.put("output", "junit5");
         }
         dialogSettings.setVisible(false);
     }//GEN-LAST:event_buttonSaveActionPerformed
 
     private void buttonGETActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonGETActionPerformed
-        wipe();
-        System.out.print("GET " + currentURI.getText().trim() + " ");
-        int respCode = apiCon.reqGet(currentURI.getText().trim(), rootNode);
-        System.out.println(respCode);
+        boolean proceed = true;
+        if (currentURI.getText().trim().contentEquals(lastUsedURI)) {
+            proceed = askQuestion("Use this URI?");
+        }
 
-        //this is very simple for now
-        writer.writeStart();
-        writer.writeGet(currentURI.getText().trim(), respCode);
-        writer.writeEnd();
+        if (proceed) {
+            wipe();
+            System.out.print("GET " + currentURI.getText().trim() + " ");
+            int respCode = apiCon.reqGet(currentURI.getText().trim(), rootNode);
+            System.out.println(respCode);
+
+            writer.writeStart();
+            writer.writeGet(currentURI.getText().trim(), respCode);
+            writer.writeEnd();
+
+            lastUsedURI = currentURI.getText().trim();
+        }
     }//GEN-LAST:event_buttonGETActionPerformed
 
     private void labelLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelLinkMouseClicked
@@ -563,25 +584,48 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     }//GEN-LAST:event_buttonCancelActionPerformed
 
     private void buttonPOSTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPOSTActionPerformed
-        // TODO add your handling code here:
-        System.out.print("POST " + currentURI.getText().trim() + " ");
+        boolean proceed = true;
+        if (currentURI.getText().trim().contentEquals(lastUsedURI)) {
+            proceed = askQuestion("Use this URI?");
+        }
 
-        //save the outgoing data with escaped doube quotes
-        String data = apiCon.repack(rootNode).replace("\"", "\\\"");
+        if (proceed) {
+            System.out.print("POST " + currentURI.getText().trim() + " ");
 
-        int respCode = apiCon.reqPost(currentURI.getText().trim(), rootNode);
-        System.out.println(respCode);
+            //save the outgoing data with escaped doube quotes
+            String data = apiCon.repack(rootNode).replace("\"", "\\\"");
 
-        //this is very simple for now
-        writer.writeStart();
-        writer.writePost(currentURI.getText().trim(), data, respCode);
-        writer.writeEnd();
+            int respCode = apiCon.reqPost(currentURI.getText().trim(), rootNode);
+            System.out.println(respCode);
+
+            writer.writeStart();
+            writer.writePost(currentURI.getText().trim(), data, respCode);
+            writer.writeEnd();
+
+            lastUsedURI = currentURI.getText().trim();
+        }
 
     }//GEN-LAST:event_buttonPOSTActionPerformed
 
     private void buttonDELETEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonDELETEActionPerformed
-        // TODO add your handling code here:
-        System.out.println("DELETE not implemented");
+        boolean proceed = true;
+        if (currentURI.getText().trim().contentEquals(lastUsedURI)) {
+            proceed = askQuestion("Use this URI?");
+        }
+
+        if (proceed) {
+            System.out.print("DELETE " + currentURI.getText().trim() + " ");
+
+            int respCode = apiCon.reqDelete(currentURI.getText().trim(), rootNode);
+            System.out.println(respCode);
+
+            writer.writeStart();
+            writer.writeDelete(currentURI.getText().trim(), respCode);
+            writer.writeEnd();
+
+            lastUsedURI = currentURI.getText().trim();
+        }
+
     }//GEN-LAST:event_buttonDELETEActionPerformed
 
     private void menuImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuImportActionPerformed
@@ -699,6 +743,16 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             message = message.substring(0, Const.MAX_SIZ);
         }
         JOptionPane.showMessageDialog(new JFrame(), message.replace(". ", ". \n"), "Error", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    @Override
+    public boolean askQuestion(String questionText) {
+        int ok = JOptionPane.showConfirmDialog(new JFrame(), questionText, questionText, JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (ok == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

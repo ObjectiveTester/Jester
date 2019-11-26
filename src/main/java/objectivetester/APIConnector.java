@@ -15,6 +15,7 @@ import javax.swing.tree.TreeNode;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.impl.client.*;
 import org.json.JSONObject;
 import org.apache.http.client.methods.HttpGet;
@@ -113,6 +114,40 @@ class APIConnector {
         return code;
     }
 
+        Integer reqDelete(String fullUrl, DefaultMutableTreeNode node) {
+        Object json;
+        String resp;
+        Integer code = 0;
+
+        HttpClientBuilder builder = HttpClients.custom();
+        builder.setRedirectStrategy(new LaxRedirectStrategy());
+        HttpClient httpclient = builder.build();
+
+        try {
+            HttpDelete delete = new HttpDelete(fullUrl);
+            HttpResponse response = httpclient.execute(delete);
+            code = response.getStatusLine().getStatusCode();
+            resp = EntityUtils.toString(response.getEntity());
+            json = new JSONTokener(resp).nextValue();
+
+            if (json instanceof JSONArray) {
+                isArray = true;
+                node.setUserObject("Array");
+            } else {
+                isArray = false;
+                node.setUserObject("Object");
+            }
+
+            unpack(node, "", json, -1);
+
+        } catch (IOException | ParseException | IllegalArgumentException ex) {
+            //System.out.print(ex.getMessage());
+            ui.errorMessage(ex.getMessage());
+        }
+
+        return code;
+    }
+    
     void unpack(DefaultMutableTreeNode parent, String key, Object value, int idx) {
 
         int innerIndex = idx;

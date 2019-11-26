@@ -16,6 +16,8 @@ interface UserInterface {
 
     void errorMessage(String message);
     
+    boolean askQuestion(String questionText);
+    
     void delete(DefaultMutableTreeNode target);
     
     void edit(DefaultMutableTreeNode target, String value);
