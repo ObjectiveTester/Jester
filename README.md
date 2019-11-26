@@ -2,9 +2,7 @@ Jester
 ======
 
 Jester is an experimental (a.k.a unfinished) API test tool. It outputs your actions as Java statements that can then be refactored into reusable tests using REST Assured.
-So far the tool can GET, edit and POST JSON responses from API endpoints.
-
-In the future you will be able to assert on values within the returned responses.
+So far the tool can GET, edit and POST JSON responses, or DELETE from API endpoints.
 
 
 
@@ -37,7 +35,7 @@ Functionality is limited to POST, GET and ASSERT for now:
 POST
 ----
 Either import some JSON data from 'File -> Import' or create it by inserting keys and values into the empty obejct (this may be a little unstable, with minimal error checking).
-Then click the 'POST' icon. There is an option in 'Settings' to only parse GET responses
+Then click the 'POST' icon. There is an option in 'Settings' to only parse GET responses.
 
 
 GET
@@ -49,4 +47,8 @@ ASSERT
 Right-click on a value in the tree and assert on it.
 
 
-In the right hand frame, Java statements are generated. This should be runnable from an IDE, etc. after a little cleanup.
+DELETE
+------
+Sends a simple DELETE request.
+
+In the right hand frame, Java statements are generated. These should be runnable from an IDE, etc. after a little cleanup.
