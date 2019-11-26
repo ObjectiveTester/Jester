@@ -6,8 +6,6 @@ package objectivetester;
  */
 class TestWriter5 extends DefaultWriter {
 
-    private int n;
-
     TestWriter5(UserInterface ui) {
         this.n = 0;
         this.ui = ui;
@@ -52,38 +50,5 @@ class TestWriter5 extends DefaultWriter {
                 + "    }\n"
                 + "\n}");
         footer = 2; //lines from the insert point to the bottom
-    }
-
-    void writeStart() {
-        n++;
-        ui.insertCode("\n    @Test\n"
-                + "    public void test" + n + "() {", footer);
-    }
-
-    void writeAssert(String node, String value) {
-        ui.insertCode("\n        //assert:" + value + "\n"
-                // some code
-                + "        .body(\"" + node + "\", equalTo(\"" + value + "\"))"
-                + "", footer + 4);
-    }
-
-    void writeGet(String url, int code) {
-        ui.insertCode("\n        //get:" + url + "\n"
-                + "        given().when().get(\"" + url + "\").then()\n\n\n"
-                + "        .statusCode(" + code + ");\n"
-                + "", footer);
-    }
-
-    void writePost(String url, String data, int code) {
-        ui.insertCode("\n        //post:" + url + "\n"
-                + "        String data = \"" + data + "\";\n"
-                + "        given().contentType(\"application/json\")"
-                + ".body(data).post(\"" + url + "\").then()\n\n\n"
-                + "        .statusCode(" + code + ");\n"
-                + "", footer);
-    }
-
-    void writeEnd() {
-        ui.insertCode("\n    }\n", footer);
     }
 }
