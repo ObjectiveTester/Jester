@@ -139,12 +139,18 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         buttonJunit5 = new javax.swing.JRadioButton();
         buttonSave = new javax.swing.JButton();
         buttonCancel = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
         labelUri = new javax.swing.JLabel();
         currentURI = new javax.swing.JTextField();
         buttonGET = new javax.swing.JButton();
         buttonPOST = new javax.swing.JButton();
         buttonDELETE = new javax.swing.JButton();
+        jToolBar2 = new javax.swing.JToolBar();
+        labelHeaders = new javax.swing.JLabel();
+        textHeaders = new javax.swing.JTextField();
+        labelCookies = new javax.swing.JLabel();
+        textCookies = new javax.swing.JTextField();
         jSplitPane1 = new javax.swing.JSplitPane();
         paneTree = new javax.swing.JScrollPane(jTree);
         paneCode = new javax.swing.JScrollPane();
@@ -354,6 +360,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setIconImage(icon.getImage());
 
+        jPanel1.setPreferredSize(new java.awt.Dimension(688, 80));
+
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
@@ -408,7 +416,55 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         });
         jToolBar1.add(buttonDELETE);
 
-        getContentPane().add(jToolBar1, java.awt.BorderLayout.PAGE_START);
+        jToolBar2.setFloatable(false);
+        jToolBar2.setRollover(true);
+
+        labelHeaders.setText("Headers");
+        jToolBar2.add(labelHeaders);
+
+        textHeaders.setText("MyHeader=foo");
+        textHeaders.setToolTipText("Comma seperated list of headers (e.g. Header=foo)");
+        jToolBar2.add(textHeaders);
+
+        labelCookies.setText("Cookies");
+        jToolBar2.add(labelCookies);
+
+        textCookies.setText("JSESSIONID=1234");
+        textCookies.setToolTipText("Comma seperated list of cookies (e.g. ID=foo)");
+        jToolBar2.add(textCookies);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 688, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 78, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(40, Short.MAX_VALUE)))
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addContainerGap(39, Short.MAX_VALUE)
+                    .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap()))
+        );
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
         paneTree.setPreferredSize(new java.awt.Dimension(300, 300));
         jSplitPane1.setLeftComponent(paneTree);
@@ -523,7 +579,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         if (proceed) {
             wipe();
             System.out.print("GET " + currentURI.getText().trim() + " ");
-            int respCode = apiCon.reqGet(currentURI.getText().trim(), rootNode);
+            int respCode = apiCon.reqGet(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), rootNode);
             System.out.println(respCode);
 
             writer.writeStart();
@@ -595,7 +651,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             //save the outgoing data with escaped doube quotes
             String data = apiCon.repack(rootNode).replace("\"", "\\\"");
 
-            int respCode = apiCon.reqPost(currentURI.getText().trim(), rootNode);
+            int respCode = apiCon.reqPost(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), rootNode);
             System.out.println(respCode);
 
             writer.writeStart();
@@ -616,7 +672,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         if (proceed) {
             System.out.print("DELETE " + currentURI.getText().trim() + " ");
 
-            int respCode = apiCon.reqDelete(currentURI.getText().trim(), rootNode);
+            int respCode = apiCon.reqDelete(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), rootNode);
             System.out.println(respCode);
 
             writer.writeStart();
@@ -679,11 +735,15 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private javax.swing.JTextField currentURI;
     private javax.swing.JDialog dialogAbout;
     private javax.swing.JDialog dialogSettings;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JToolBar jToolBar2;
+    private javax.swing.JLabel labelCookies;
     private javax.swing.JLabel labelCopyright;
     private javax.swing.JLabel labelDefuri;
     private javax.swing.JLabel labelDesc;
+    private javax.swing.JLabel labelHeaders;
     private javax.swing.JLabel labelLink;
     private javax.swing.JLabel labelName;
     private javax.swing.JLabel labelOpts;
@@ -704,6 +764,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private javax.swing.JPanel panelSettings;
     private javax.swing.JTextField serviceURI;
     private javax.swing.JTextArea textConsole;
+    private javax.swing.JTextField textCookies;
+    private javax.swing.JTextField textHeaders;
     // End of variables declaration//GEN-END:variables
 
     @Override

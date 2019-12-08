@@ -5,13 +5,17 @@ package objectivetester;
  * @author Steve
  */
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
@@ -22,6 +26,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.HeaderGroup;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONTokener;
@@ -35,17 +42,17 @@ class APIConnector {
         this.ui = ui;
     }
 
-    Integer reqGet(String fullUrl, DefaultMutableTreeNode node) {
+    Integer reqGet(String fullUrl, String headers, String cookies, DefaultMutableTreeNode node) {
         Object json;
         String resp;
         Integer code = 0;
 
         HttpClientBuilder builder = HttpClients.custom();
         builder.setRedirectStrategy(new LaxRedirectStrategy());
-        HttpClient httpclient = builder.build();
-
+        HttpClient httpclient = builder.setDefaultCookieStore(buildCookies(cookies, fullUrl)).build();
         try {
             HttpGet get = new HttpGet(fullUrl);
+            get.setHeaders(buildHeaders(headers));
             HttpResponse response = httpclient.execute(get);
             code = response.getStatusLine().getStatusCode();
             resp = EntityUtils.toString(response.getEntity());
@@ -69,7 +76,7 @@ class APIConnector {
         return code;
     }
 
-    Integer reqPost(String fullUrl, DefaultMutableTreeNode node) {
+    Integer reqPost(String fullUrl, String headers, String cookies, DefaultMutableTreeNode node) {
         Object json;
         Integer code = 0;
 
@@ -78,11 +85,12 @@ class APIConnector {
 
         HttpClientBuilder builder = HttpClients.custom();
         builder.setRedirectStrategy(new LaxRedirectStrategy());
-        HttpClient httpclient = builder.build();
+        HttpClient httpclient = builder.setDefaultCookieStore(buildCookies(cookies, fullUrl)).build();
 
         try {
             HttpPost post = new HttpPost(fullUrl);
             post.setEntity(entity);
+            post.setHeaders(buildHeaders(headers));
             HttpResponse response = httpclient.execute(post);
             code = response.getStatusLine().getStatusCode();
             String resp = EntityUtils.toString(response.getEntity());
@@ -114,17 +122,18 @@ class APIConnector {
         return code;
     }
 
-        Integer reqDelete(String fullUrl, DefaultMutableTreeNode node) {
+    Integer reqDelete(String fullUrl, String headers, String cookies, DefaultMutableTreeNode node) {
         Object json;
         String resp;
         Integer code = 0;
 
         HttpClientBuilder builder = HttpClients.custom();
         builder.setRedirectStrategy(new LaxRedirectStrategy());
-        HttpClient httpclient = builder.build();
+        HttpClient httpclient = builder.setDefaultCookieStore(buildCookies(cookies, fullUrl)).build();
 
         try {
             HttpDelete delete = new HttpDelete(fullUrl);
+            delete.setHeaders(buildHeaders(headers));
             HttpResponse response = httpclient.execute(delete);
             code = response.getStatusLine().getStatusCode();
             resp = EntityUtils.toString(response.getEntity());
@@ -147,7 +156,7 @@ class APIConnector {
 
         return code;
     }
-    
+
     void unpack(DefaultMutableTreeNode parent, String key, Object value, int idx) {
 
         int innerIndex = idx;
@@ -293,9 +302,9 @@ class APIConnector {
     }
 
     void importData(String rawjson, DefaultMutableTreeNode node) {
-        
+
         Object json = new JSONTokener(rawjson).nextValue();
-        
+
         if (json instanceof JSONArray) {
             isArray = true;
             node.setUserObject("Array");
@@ -308,6 +317,50 @@ class APIConnector {
         unpack(node, "", json, -1);
     }
 
+    BasicCookieStore buildCookies(String rawCookies, String reqUrl) {
+        BasicCookieStore cookieStore = new BasicCookieStore();
 
+        String domain = "";
+        String path = "";
+
+        try {
+            URL url = new URL(reqUrl);
+            domain = url.getProtocol() + "://" + url.getHost();
+            path = url.getPath();
+        } catch (MalformedURLException ex) {
+        }
+
+        String[] c = rawCookies.split("\\s*,\\s*");
+        ArrayList<String> cookies = new ArrayList<>(Arrays.asList(c));
+
+        for (String cookie : cookies) {
+            String key = cookie.substring(0, cookie.indexOf("="));
+            String val = cookie.substring(1 + cookie.indexOf("="), cookie.length());
+
+            BasicClientCookie clientCookie = new BasicClientCookie(key, val);
+            clientCookie.setDomain(domain);
+            clientCookie.setPath(path);
+            cookieStore.addCookie(clientCookie);
+        }
+
+        return cookieStore;
+    }
+
+    Header[] buildHeaders(String rawHeaders) {
+        HeaderGroup headerGroup = new HeaderGroup();
+        
+        String[] h = rawHeaders.split("\\s*,\\s*");
+        ArrayList<String> headers = new ArrayList<>(Arrays.asList(h));
+
+        for (String header : headers) {
+            String key = header.substring(0, header.indexOf("="));
+            String val = header.substring(1 + header.indexOf("="), header.length());
+
+            headerGroup.addHeader(new BasicHeader(key,val));
+        }
+
+        return headerGroup.getAllHeaders();
+
+    }
 
 }
