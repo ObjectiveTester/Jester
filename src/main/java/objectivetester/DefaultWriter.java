@@ -20,7 +20,7 @@ public class DefaultWriter {
     }
 
     void writeAssert(String node, String value) {
-        ui.insertCode("\n        //assert:" + value + "\n"
+        ui.insertCode("\n        //assert:" + node + "=" + value + "\n"
                 // some code
                 + "        .body(\"" + node + "\", equalTo(\"" + value + "\"))"
                 + "", footer + 4);
@@ -28,7 +28,7 @@ public class DefaultWriter {
 
     void writeGet(String url, int code) {
         ui.insertCode("\n        //get:" + url + "\n"
-                + "        given().when().get(\"" + url + "\").then()\n\n\n"
+                + "        given().when().get(\"" + url + "\").then()\n"
                 + "        .statusCode(" + code + ");\n"
                 + "", footer);
     }
@@ -37,20 +37,20 @@ public class DefaultWriter {
         ui.insertCode("\n        //post:" + url + "\n"
                 + "        String data = \"" + data + "\";\n"
                 + "        given().contentType(\"application/json\")"
-                + ".body(data).post(\"" + url + "\").then()\n\n\n"
+                + ".body(data).post(\"" + url + "\").then()\n"
                 + "        .statusCode(" + code + ");\n"
                 + "", footer);
     }
 
     void writeDelete(String url, int code) {
         ui.insertCode("\n        //delete:" + url + "\n"
-                + "        given().when().delete(\"" + url + "\").then()\n\n\n"
+                + "        given().when().delete(\"" + url + "\").then()\n"
                 + "        .statusCode(" + code + ");\n"
                 + "", footer);
     }
 
     void writeEnd() {
-        ui.insertCode("\n    }\n", footer);
+        ui.insertCode("    }\n", footer);
     }
 
 }
