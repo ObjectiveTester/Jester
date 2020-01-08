@@ -583,7 +583,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             System.out.println(respCode);
 
             writer.writeStart();
-            writer.writeGet(currentURI.getText().trim(), respCode);
+            writer.writeGet(currentURI.getText().trim(), respCode, textHeaders.getText(), textCookies.getText());
             writer.writeEnd();
 
             lastUsedURI = currentURI.getText().trim();
@@ -655,7 +655,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             System.out.println(respCode);
 
             writer.writeStart();
-            writer.writePost(currentURI.getText().trim(), data, respCode);
+            writer.writePost(currentURI.getText().trim(), data, respCode, textHeaders.getText(), textCookies.getText());
             writer.writeEnd();
 
             lastUsedURI = currentURI.getText().trim();
@@ -676,7 +676,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             System.out.println(respCode);
 
             writer.writeStart();
-            writer.writeDelete(currentURI.getText().trim(), respCode);
+            writer.writeDelete(currentURI.getText().trim(), respCode, textHeaders.getText(), textCookies.getText());
             writer.writeEnd();
 
             lastUsedURI = currentURI.getText().trim();

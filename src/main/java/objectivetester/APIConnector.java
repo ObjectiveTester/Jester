@@ -320,45 +320,47 @@ class APIConnector {
     BasicCookieStore buildCookies(String rawCookies, String reqUrl) {
         BasicCookieStore cookieStore = new BasicCookieStore();
 
-        String domain = "";
-        String path = "";
+        if (!rawCookies.isEmpty()) {
+            String domain = "";
+            String path = "";
 
-        try {
-            URL url = new URL(reqUrl);
-            domain = url.getProtocol() + "://" + url.getHost();
-            path = url.getPath();
-        } catch (MalformedURLException ex) {
+            try {
+                URL url = new URL(reqUrl);
+                domain = url.getProtocol() + "://" + url.getHost();
+                path = url.getPath();
+            } catch (MalformedURLException ex) {
+            }
+
+            String[] c = rawCookies.split("\\s*,\\s*");
+            ArrayList<String> cookies = new ArrayList<>(Arrays.asList(c));
+
+            for (String cookie : cookies) {
+                String key = cookie.substring(0, cookie.indexOf("="));
+                String val = cookie.substring(1 + cookie.indexOf("="), cookie.length());
+
+                BasicClientCookie clientCookie = new BasicClientCookie(key, val);
+                clientCookie.setDomain(domain);
+                clientCookie.setPath(path);
+                cookieStore.addCookie(clientCookie);
+            }
         }
-
-        String[] c = rawCookies.split("\\s*,\\s*");
-        ArrayList<String> cookies = new ArrayList<>(Arrays.asList(c));
-
-        for (String cookie : cookies) {
-            String key = cookie.substring(0, cookie.indexOf("="));
-            String val = cookie.substring(1 + cookie.indexOf("="), cookie.length());
-
-            BasicClientCookie clientCookie = new BasicClientCookie(key, val);
-            clientCookie.setDomain(domain);
-            clientCookie.setPath(path);
-            cookieStore.addCookie(clientCookie);
-        }
-
         return cookieStore;
     }
 
     Header[] buildHeaders(String rawHeaders) {
         HeaderGroup headerGroup = new HeaderGroup();
-        
-        String[] h = rawHeaders.split("\\s*,\\s*");
-        ArrayList<String> headers = new ArrayList<>(Arrays.asList(h));
 
-        for (String header : headers) {
-            String key = header.substring(0, header.indexOf("="));
-            String val = header.substring(1 + header.indexOf("="), header.length());
+        if (!rawHeaders.isEmpty()) {
+            String[] h = rawHeaders.split("\\s*,\\s*");
+            ArrayList<String> headers = new ArrayList<>(Arrays.asList(h));
 
-            headerGroup.addHeader(new BasicHeader(key,val));
+            for (String header : headers) {
+                String key = header.substring(0, header.indexOf("="));
+                String val = header.substring(1 + header.indexOf("="), header.length());
+
+                headerGroup.addHeader(new BasicHeader(key, val));
+            }
         }
-
         return headerGroup.getAllHeaders();
 
     }
