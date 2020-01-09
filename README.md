@@ -61,12 +61,17 @@ Right-click on a value in the tree and assert on it.
 
 Cookies & Headers
 -----------------
-Cookies and custom headers can be included in the requests by adding them to the text boxes as a comma seperated list of key=value pairs -  e.g. 'JSESSIONID=1234, DEGUG=true', etc.
+Cookies and custom headers can be included in the requests by adding them to the text boxes as a comma seperated list of key=value pairs -  e.g.
+
+   SESSIONID=1234, DEGUG=true
+
 
 
 Query Parameters
 ----------------
-Add query parameters to the request by adding them to the URI - e.g. '?q=test&type=debug', etc.
+Add query parameters to the request by adding them to the URI - e.g.
+
+    q=test&type=debug
 
 
 In the right hand frame, Java statements are generated. These should be runnable from an IDE, etc. after a little cleanup.
