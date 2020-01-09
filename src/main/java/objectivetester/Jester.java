@@ -42,7 +42,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
      * Creates new form
      */
     public Jester() {
-        icon = new ImageIcon(getClass().getResource("/images/wisard.png"));
+        icon = new ImageIcon(getClass().getResource("/images/jester.png"));
 
         rootNode = new DefaultMutableTreeNode("Object");
         treeModel = new DefaultTreeModel(rootNode);
@@ -187,11 +187,12 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         gridBagConstraints.gridy = 1;
         panelAbout.add(labelDesc, gridBagConstraints);
 
-        labelCopyright.setText("© Steve Mellor 2019");
+        labelCopyright.setText("© Steve Mellor 2019-2020");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         panelAbout.add(labelCopyright, gridBagConstraints);
+        labelCopyright.getAccessibleContext().setAccessibleName("© Steve Mellor 2019-2020");
 
         labelLink.setText("<html> <a href=\"https://github.com/objectivetester/jester\">Jester on github</a></html>");
         labelLink.setToolTipText("");
@@ -377,7 +378,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         jToolBar1.add(currentURI);
         currentURI.getAccessibleContext().setAccessibleName("URI");
 
-        buttonGET.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/inspect.png"))); // NOI18N
+        buttonGET.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/get.png"))); // NOI18N
         buttonGET.setToolTipText("GET");
         buttonGET.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         buttonGET.setFocusable(false);
@@ -390,7 +391,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         });
         jToolBar1.add(buttonGET);
 
-        buttonPOST.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/refresh.png"))); // NOI18N
+        buttonPOST.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/post.png"))); // NOI18N
         buttonPOST.setToolTipText("POST");
         buttonPOST.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         buttonPOST.setFocusable(false);
@@ -403,7 +404,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         });
         jToolBar1.add(buttonPOST);
 
-        buttonDELETE.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cancel.png"))); // NOI18N
+        buttonDELETE.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/delete.png"))); // NOI18N
         buttonDELETE.setToolTipText("DELETE");
         buttonDELETE.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         buttonDELETE.setFocusable(false);
