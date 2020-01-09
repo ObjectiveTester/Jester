@@ -63,7 +63,7 @@ Cookies & Headers
 -----------------
 Cookies and custom headers can be included in the requests by adding them to the text boxes as a comma seperated list of key=value pairs -  e.g.
 
-   SESSIONID=1234, DEGUG=true
+    SESSIONID=1234, DEGUG=true
 
 
 
