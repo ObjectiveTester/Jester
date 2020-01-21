@@ -51,7 +51,7 @@ public class DefaultWriter {
             for (String header : headers) {
                 String key = header.substring(0, header.indexOf("="));
                 String val = header.substring(1 + header.indexOf("="), header.length());
-                testCookies = testCookies + ".header(\"" + key + "\", \"" + val + "\")";
+                testHeaders = testHeaders + ".header(\"" + key + "\", \"" + val + "\")";
             }
         }
 
@@ -82,7 +82,7 @@ public class DefaultWriter {
             for (String header : headers) {
                 String key = header.substring(0, header.indexOf("="));
                 String val = header.substring(1 + header.indexOf("="), header.length());
-                testCookies = testCookies + ".header(\"" + key + "\", \"" + val + "\")";
+                testHeaders = testHeaders + ".header(\"" + key + "\", \"" + val + "\")";
             }
         }
 
@@ -115,7 +115,7 @@ public class DefaultWriter {
             for (String header : headers) {
                 String key = header.substring(0, header.indexOf("="));
                 String val = header.substring(1 + header.indexOf("="), header.length());
-                testCookies = testCookies + ".header(\"" + key + "\", \"" + val + "\")";
+                testHeaders = testHeaders + ".header(\"" + key + "\", \"" + val + "\")";
             }
         }
 
