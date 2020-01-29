@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 /**
@@ -139,42 +140,44 @@ class EventListener extends MouseAdapter implements ActionListener {
         }
 
         if (e.getActionCommand().contentEquals(Const.INSERTV)) {
-            //do a lot more checking here
-            //do not add if key already has a value
-            //
-            if (nodeSelected != null) {
-                Object rawVal = null;
-                String val = ui.enterValue("new value");
-                if (val != null) {
+            //do more checking here?
+            if (nodeSelected != null) {      
+                DefaultMutableTreeNode nodeChild = (DefaultMutableTreeNode)(nodeSelected.getFirstChild());          
+                JsonElement element = (JsonElement) nodeChild.getUserObject();
+                if (!element.elementType.equals(Type.VALUE)) {
+                    Object rawVal = null;
+                    String val = ui.enterValue("new value");
+                    if (val != null) {
 
-                    //integer?
-                    try {
-                        Integer intVal = Integer.parseInt(val);
-                        rawVal = intVal;
-                    } catch (NumberFormatException nfe) {
-                    }
-
-                    //double?
-                    if (rawVal == null) {
+                        //integer?
                         try {
-                            Double dblVal = Double.parseDouble(val);
-                            rawVal = dblVal;
+                            Integer intVal = Integer.parseInt(val);
+                            rawVal = intVal;
                         } catch (NumberFormatException nfe) {
                         }
-                    }
 
-                    //boolean or string?
-                    if (rawVal == null) {
-                        if ((val.equals("true")) || (val.equals("false"))) {
-                            rawVal = Boolean.valueOf(val);
-                        } else {
-                            rawVal = val;
+                        //double?
+                        if (rawVal == null) {
+                            try {
+                                Double dblVal = Double.parseDouble(val);
+                                rawVal = dblVal;
+                            } catch (NumberFormatException nfe) {
+                            }
                         }
+
+                        //boolean or string?
+                        if (rawVal == null) {
+                            if ((val.equals("true")) || (val.equals("false"))) {
+                                rawVal = Boolean.valueOf(val);
+                            } else {
+                                rawVal = val;
+                            }
+                        }
+
+                        DefaultMutableTreeNode objectnode = new DefaultMutableTreeNode(new JsonElement(rawVal, Type.VALUE));
+
+                        nodeSelected.add(objectnode);
                     }
-
-                    DefaultMutableTreeNode objectnode = new DefaultMutableTreeNode(new JsonElement(rawVal, Type.VALUE));
-
-                    nodeSelected.add(objectnode);
                 }
             }
         }
