@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 /**
@@ -63,7 +62,7 @@ class EventListener extends MouseAdapter implements ActionListener {
             }
             //disable choices that are invalid for the item selected
             //for example, empty space or value, etc.
-            //
+            //TODO
 
             //show the popup menu
             popup.show(e.getComponent(), e.getX(), e.getY());
@@ -141,9 +140,8 @@ class EventListener extends MouseAdapter implements ActionListener {
 
         if (e.getActionCommand().contentEquals(Const.INSERTV)) {
             //do more checking here?
-            if (nodeSelected != null) {      
-                DefaultMutableTreeNode nodeChild = (DefaultMutableTreeNode)(nodeSelected.getFirstChild());          
-                JsonElement element = (JsonElement) nodeChild.getUserObject();
+            if ((nodeSelected != null) && (nodeSelected.getDepth() == 0)) {
+                JsonElement element = (JsonElement) nodeSelected.getUserObject();
                 if (!element.elementType.equals(Type.VALUE)) {
                     Object rawVal = null;
                     String val = ui.enterValue("new value");
