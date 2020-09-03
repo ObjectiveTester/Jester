@@ -335,13 +335,15 @@ class APIConnector {
             ArrayList<String> cookies = new ArrayList<>(Arrays.asList(c));
 
             for (String cookie : cookies) {
-                String key = cookie.substring(0, cookie.indexOf("="));
-                String val = cookie.substring(1 + cookie.indexOf("="), cookie.length());
+                if (cookie.contains("=")) {
+                    String key = cookie.substring(0, cookie.indexOf("="));
+                    String val = cookie.substring(1 + cookie.indexOf("="), cookie.length());
 
-                BasicClientCookie clientCookie = new BasicClientCookie(key, val);
-                clientCookie.setDomain(domain);
-                clientCookie.setPath(path);
-                cookieStore.addCookie(clientCookie);
+                    BasicClientCookie clientCookie = new BasicClientCookie(key, val);
+                    clientCookie.setDomain(domain);
+                    clientCookie.setPath(path);
+                    cookieStore.addCookie(clientCookie);
+                }
             }
         }
         return cookieStore;
@@ -355,10 +357,12 @@ class APIConnector {
             ArrayList<String> headers = new ArrayList<>(Arrays.asList(h));
 
             for (String header : headers) {
-                String key = header.substring(0, header.indexOf("="));
-                String val = header.substring(1 + header.indexOf("="), header.length());
+                if (header.contains("=")) {
+                    String key = header.substring(0, header.indexOf("="));
+                    String val = header.substring(1 + header.indexOf("="), header.length());
 
-                headerGroup.addHeader(new BasicHeader(key, val));
+                    headerGroup.addHeader(new BasicHeader(key, val));
+                }
             }
         }
         return headerGroup.getAllHeaders();

@@ -38,9 +38,11 @@ public class DefaultWriter {
             String[] c = rawCookies.split("\\s*,\\s*");
             ArrayList<String> cookies = new ArrayList<>(Arrays.asList(c));
             for (String cookie : cookies) {
-                String key = cookie.substring(0, cookie.indexOf("="));
-                String val = cookie.substring(1 + cookie.indexOf("="), cookie.length());
-                testCookies = testCookies + ".cookie(\"" + key + "\", \"" + val + "\")";
+                if (cookie.contains("=")) {
+                    String key = cookie.substring(0, cookie.indexOf("="));
+                    String val = cookie.substring(1 + cookie.indexOf("="), cookie.length());
+                    testCookies = testCookies + ".cookie(\"" + key + "\", \"" + val + "\")";
+                }
             }
         }
 
@@ -49,9 +51,11 @@ public class DefaultWriter {
             ArrayList<String> headers = new ArrayList<>(Arrays.asList(h));
 
             for (String header : headers) {
-                String key = header.substring(0, header.indexOf("="));
-                String val = header.substring(1 + header.indexOf("="), header.length());
-                testHeaders = testHeaders + ".header(\"" + key + "\", \"" + val + "\")";
+                if (header.contains("=")) {
+                    String key = header.substring(0, header.indexOf("="));
+                    String val = header.substring(1 + header.indexOf("="), header.length());
+                    testHeaders = testHeaders + ".header(\"" + key + "\", \"" + val + "\")";
+                }
             }
         }
 
