@@ -78,6 +78,7 @@ class APIConnector {
 
     Integer reqPost(String fullUrl, String headers, String cookies, DefaultMutableTreeNode node) {
         Object json;
+        String resp;
         Integer code = 0;
 
         String data = repack(node);
@@ -93,25 +94,23 @@ class APIConnector {
             post.setHeaders(buildHeaders(headers));
             HttpResponse response = httpclient.execute(post);
             code = response.getStatusLine().getStatusCode();
-            String resp = EntityUtils.toString(response.getEntity());
+            resp = EntityUtils.toString(response.getEntity());
 
-            if (ui.getIgnorePref()) {
-                //System.out.print(resp);
-            } else {
-                //System.out.print(resp);
+            if (!ui.getIgnorePref()) {
+                if (!resp.isEmpty()) {
+                    json = new JSONTokener(resp).nextValue();
 
-                json = new JSONTokener(resp).nextValue();
+                    if (json instanceof JSONArray) {
+                        isArray = true;
+                        node.setUserObject("Array");
+                    } else {
+                        isArray = false;
+                        node.setUserObject("Object");
+                    }
 
-                if (json instanceof JSONArray) {
-                    isArray = true;
-                    node.setUserObject("Array");
-                } else {
-                    isArray = false;
-                    node.setUserObject("Object");
+                    ui.wipe();
+                    unpack(node, "", json, -1);
                 }
-
-                ui.wipe();
-                unpack(node, "", json, -1);
             }
 
         } catch (IOException | ParseException | IllegalArgumentException ex) {
@@ -137,17 +136,23 @@ class APIConnector {
             HttpResponse response = httpclient.execute(delete);
             code = response.getStatusLine().getStatusCode();
             resp = EntityUtils.toString(response.getEntity());
-            json = new JSONTokener(resp).nextValue();
 
-            if (json instanceof JSONArray) {
-                isArray = true;
-                node.setUserObject("Array");
-            } else {
-                isArray = false;
-                node.setUserObject("Object");
+            if (!ui.getIgnorePref()) {
+                if (!resp.isEmpty()) {
+                    json = new JSONTokener(resp).nextValue();
+
+                    if (json instanceof JSONArray) {
+                        isArray = true;
+                        node.setUserObject("Array");
+                    } else {
+                        isArray = false;
+                        node.setUserObject("Object");
+                    }
+
+                    ui.wipe();
+                    unpack(node, "", json, -1);
+                }
             }
-
-            unpack(node, "", json, -1);
 
         } catch (IOException | ParseException | IllegalArgumentException ex) {
             //System.out.print(ex.getMessage());
