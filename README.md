@@ -21,21 +21,16 @@ Build a package from the command line with:
 Running Jester
 ==============
 
-Once built, either double-click 'Jester-0.1.jar' in the 'target' folder or start from the command line with:
+Once built, either double-click 'Jester-0.2.jar' in the 'target' folder or start from the command line with:
 
-    java -jar target/Jester-0.1.jar
+    java -jar target/Jester-0.2.jar
     
 
 
 
 Testing Jester
 ============
-Jester can GET, POST, DELETE, assert on responses and all of these operations generate Java statements using either Junit4 or Junit5.
-
-
-JSON editing
-------------
-You can insert, delete and modify JSON elements but this functionality has no error checking at present (coming soon!)
+Jester can GET, POST, DELETE, assert on values in responses and all of these operations generate Java statements using either Junit4 or Junit5.
 
 
 POST
@@ -58,6 +53,10 @@ ASSERT
 ------
 Right-click on a value in the tree and assert on it.
 
+
+JSON editing
+------------
+You can insert, delete and modify JSON elements with some error checking. Editing data within an array does work, but not creating new array elements. 
 
 Cookies & Headers
 -----------------
