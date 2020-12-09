@@ -176,6 +176,9 @@ class EventListener extends MouseAdapter implements ActionListener {
                     //not the root or last
                     element = (JsonElement) treeNode.getUserObject();
                     if (element.elementType.equals(Type.ARRAY)) {
+                        if (elementPath.length() != 0) {
+                            elementPath = elementPath.substring(0, elementPath.length() - 1);
+                        }
                         elementPath = elementPath + "[" + element.elementObject.toString() + "]";
                     } else {
                         elementPath = elementPath + element.elementObject.toString();
