@@ -244,18 +244,22 @@ class APIConnector {
             if (element.elementType.equals(Type.ARRAY)) {
                 Map<String, Object> obj = new HashMap<>();
                 parse(node, obj, "");
+                //System.out.println("a:" + obj.toString());
                 a.add(obj);
             } else if (element.elementType.equals(Type.ARRAYKEY)) {
                 ArrayList arr = new ArrayList<Map>();
                 parse(node, arr, node.toString());
+                //System.out.println("h:" + node.toString());
                 h.put(node.toString(), arr);
             } else if (element.elementType.equals(Type.KEY)) {
                 if (node.getChildCount() > 1) {
                     Map<String, Object> newnode = new HashMap<>();
                     parse(node, newnode, node.toString());
                     if (h != null) {
+                        //System.out.println("hh:" + node.toString());
                         h.put(node.toString(), newnode);
                     } else {
+                        //System.out.println("aa:" + newnode.toString());
                         a.add(newnode);
                     }
                     //look ahead for values
@@ -267,19 +271,34 @@ class APIConnector {
                         ArrayList arr = new ArrayList<Map>();
                         Map<String, Object> obj = new HashMap<>();
                         obj.put(innerElement.toString(), arr);
+                        //System.out.println("hhh:" + node.toString());
                         h.put(node.toString(), obj);
 
                     } else {
                         if (h != null) {
-                            h.put(node.toString(), innerElement.elementObject);
+                            //System.out.println("hhhh:" + node.toString());
+                            //special case - single key val pair
+                            if (innerNode.getChildCount() > 0) {
+                                DefaultMutableTreeNode valNode = (DefaultMutableTreeNode) innerNode.getFirstChild();
+                                //System.out.println("KV:"+innerNode.toString()+","+valNode.toString());
+                                Map<String, Object> kv = new HashMap<>();
+                                kv.put(innerNode.toString(), valNode.toString());
+                                h.put(node.toString(), kv);
+                            } else {
+                                h.put(node.toString(), innerElement.elementObject);
+                            }
+
                         } else {
+                            //System.out.println("aaaa:" + innerElement.toString());
                             a.add(innerElement.elementObject);
                         }
                     }
                 } else {
                     if (h != null) {
+                        //System.out.println("hhhhh:" + node.toString());
                         h.put(node.toString(), new HashMap<>());
                     } else {
+                        //System.out.println("aaaaa:" + element.elementObject.toString());
                         a.add(element.elementObject);
                     }
                 }
