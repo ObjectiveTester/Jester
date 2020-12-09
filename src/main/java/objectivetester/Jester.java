@@ -826,11 +826,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     @Override
     public void delete(DefaultMutableTreeNode target) {
         treeModel.removeNodeFromParent(target);
-        treeModel.reload();
-    }
-
-    @Override
-    public void edit(DefaultMutableTreeNode target, String value) {
     }
 
     @Override
@@ -840,9 +835,15 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
     @Override
     public void refresh() {
+        //DELETEME - debug only
         apiCon.refresh(rootNode);
     }
-
+    
+    @Override
+    public void update() {
+        jTree.updateUI();
+    }
+    
     @Override
     public void wipe() {
         rootNode.removeAllChildren(); //this removes all nodes
