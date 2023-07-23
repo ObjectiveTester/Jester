@@ -20,6 +20,8 @@ import javax.swing.JTree;
 import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
 
 /**
  *
@@ -187,12 +189,12 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         gridBagConstraints.gridy = 1;
         panelAbout.add(labelDesc, gridBagConstraints);
 
-        labelCopyright.setText("© Steve Mellor 2019-2020");
+        labelCopyright.setText("© Steve Mellor 2019-2023");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         panelAbout.add(labelCopyright, gridBagConstraints);
-        labelCopyright.getAccessibleContext().setAccessibleName("© Steve Mellor 2019-2020");
+        labelCopyright.getAccessibleContext().setAccessibleName("© Steve Mellor 2019-2023");
 
         labelLink.setText("<html> <a href=\"https://github.com/objectivetester/jester\">Jester on github</a></html>");
         labelLink.setToolTipText("");
@@ -363,7 +365,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
         jPanel1.setPreferredSize(new java.awt.Dimension(688, 80));
 
-        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         labelUri.setText("URI");
@@ -417,7 +418,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         });
         jToolBar1.add(buttonDELETE);
 
-        jToolBar2.setFloatable(false);
         jToolBar2.setRollover(true);
 
         labelHeaders.setText("Headers");
@@ -701,7 +701,12 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
 
         try {
-            javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+            //javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+            if (Theme.light()) {
+                javax.swing.UIManager.setLookAndFeel("com.formdev.flatlaf.FlatLightLaf");
+            } else {
+                javax.swing.UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
+            }
 //            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
 //                if ("Nimbus".equals(info.getName())) {
 //                    javax.swing.UIManager.setLookAndFeel(info.getClassName());

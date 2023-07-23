@@ -69,7 +69,7 @@
             </Component>
             <Component class="javax.swing.JLabel" name="labelCopyright">
               <Properties>
-                <Property name="text" type="java.lang.String" value="&#xa9; Steve Mellor 2019-2020"/>
+                <Property name="text" type="java.lang.String" value="&#xa9; Steve Mellor 2019-2022"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -423,7 +423,6 @@
       <SubComponents>
         <Container class="javax.swing.JToolBar" name="jToolBar1">
           <Properties>
-            <Property name="floatable" type="boolean" value="false"/>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
 
@@ -514,7 +513,6 @@
         </Container>
         <Container class="javax.swing.JToolBar" name="jToolBar2">
           <Properties>
-            <Property name="floatable" type="boolean" value="false"/>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
 
