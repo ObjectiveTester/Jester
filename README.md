@@ -21,9 +21,9 @@ Build a package from the command line with:
 Running Jester
 ==============
 
-Once built, either double-click 'Jester-0.2.jar' in the 'target' folder or start from the command line with:
+Once built, either double-click 'Jester-0.3.jar' in the 'target' folder or start from the command line with:
 
-    java -jar target/Jester-0.2.jar
+    java -jar target/Jester-0.3.jar
     
 
 
