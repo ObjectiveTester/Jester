@@ -62,8 +62,7 @@ Cookies & Headers
 -----------------
 Cookies and custom headers can be included in the requests by adding them to the text boxes as a comma seperated list of key=value pairs -  e.g.
 
-    SESSIONID=1234, DEBUG=true
-
+    Authorization=Bearer abcde..., JSESSIONID=1234...
 
 
 Query Parameters
@@ -77,3 +76,12 @@ In the right hand frame, Java statements are generated. These should be runnable
 
 
 
+Authorization
+-------------
+
+Jester works with:
+
+- **API Keys** - by including the key as a query string, header or cookie
+- **Basic auth** by including the user:passwd as Base64 in a header - e.g. `Authorization=Basic dXNlcjpwYXNzd2Q=`
+- **Bearer token** - by including the token in a header - e.g. `Authorization=Bearer abcde....`
+- **Cookie auth** - setting cookies works, extracting them isn't implemented yet

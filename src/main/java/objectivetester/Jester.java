@@ -385,6 +385,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         setTitle("Jester");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setIconImage(icon.getImage());
+        setPreferredSize(new java.awt.Dimension(850, 750));
 
         jPanel1.setPreferredSize(new java.awt.Dimension(688, 80));
 
@@ -446,7 +447,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         labelHeaders.setText("Headers");
         jToolBar2.add(labelHeaders);
 
-        textHeaders.setText("MyHeader=foo");
+        textHeaders.setText("Authorization=Bearer abcde");
         textHeaders.setToolTipText("Comma seperated list of headers (e.g. Header=foo)");
         jToolBar2.add(textHeaders);
 
@@ -492,10 +493,10 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
         jSplitPane1.setLastDividerLocation(-1);
 
-        paneRequest.setPreferredSize(new java.awt.Dimension(300, 300));
+        paneRequest.setPreferredSize(new java.awt.Dimension(400, 400));
         jSplitPane1.setLeftComponent(paneRequest);
 
-        paneResponse.setPreferredSize(new java.awt.Dimension(300, 300));
+        paneResponse.setPreferredSize(new java.awt.Dimension(400, 400));
         jSplitPane1.setRightComponent(paneResponse);
 
         getContentPane().add(jSplitPane1, java.awt.BorderLayout.CENTER);

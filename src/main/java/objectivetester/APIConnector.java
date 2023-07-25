@@ -76,13 +76,12 @@ class APIConnector {
                 } else if (json instanceof JSONObject) {
                     isArray = false;
                     res.setUserObject("Response Object");
-                } else {
-                    ui.wipeRes();
-                    return code;
                 }
 
                 ui.wipeRes();
                 unpack(res, "", json, -1);
+            } else {
+                ui.wipeRes();
             }
 
         } catch (IOException | ParseException | IllegalArgumentException ex) {
@@ -131,13 +130,12 @@ class APIConnector {
                 } else if (json instanceof JSONObject) {
                     isArray = false;
                     res.setUserObject("Response Object");
-                } else {
-                    ui.wipeRes();
-                    return code;
                 }
 
                 ui.wipeRes();
                 unpack(res, "", json, -1);
+            } else {
+                ui.wipeRes();
             }
 
         } catch (IOException | ParseException | IllegalArgumentException ex) {
@@ -181,13 +179,12 @@ class APIConnector {
                 } else if (json instanceof JSONObject) {
                     isArray = false;
                     res.setUserObject("Response Object");
-                } else {
-                    ui.wipeRes();
-                    return code;
                 }
 
                 ui.wipeRes();
                 unpack(res, "", json, -1);
+            } else {
+                ui.wipeRes();
             }
 
         } catch (IOException | ParseException | IllegalArgumentException ex) {
