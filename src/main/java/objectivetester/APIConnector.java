@@ -42,9 +42,9 @@ class APIConnector {
         this.ui = ui;
     }
 
-    Integer reqGet(String fullUrl, String headers, String cookies, DefaultMutableTreeNode node) {
+    Integer reqGet(String fullUrl, String headers, String cookies, DefaultMutableTreeNode res) {
         Object json;
-        String resp;
+        String resp = "";
         Integer code = 0;
 
         HttpClientBuilder builder = HttpClients.custom();
@@ -55,33 +55,44 @@ class APIConnector {
             get.setHeaders(buildHeaders(headers));
             HttpResponse response = httpclient.execute(get);
             code = response.getStatusLine().getStatusCode();
-            resp = EntityUtils.toString(response.getEntity());
-            json = new JSONTokener(resp).nextValue();
 
-            if (json instanceof JSONArray) {
-                isArray = true;
-                node.setUserObject("Array");
-            } else {
-                isArray = false;
-                node.setUserObject("Object");
+            if (response.getEntity() != null) {
+                resp = EntityUtils.toString(response.getEntity());
             }
 
-            unpack(node, "", json, -1);
+            if (!resp.isEmpty()) {
+                json = new JSONTokener(resp).nextValue();
+
+                if (json instanceof JSONArray) {
+                    isArray = true;
+                    res.setUserObject("Response Array");
+                } else if (json instanceof JSONObject) {
+                    isArray = false;
+                    res.setUserObject("Response Object");
+                } else {
+                    ui.wipeRes();
+                    return code;
+                }
+
+                ui.wipeRes();
+                unpack(res, "", json, -1);
+            }
 
         } catch (IOException | ParseException | IllegalArgumentException ex) {
-            //System.out.print(ex.getMessage());
+            // System.out.print(ex.getMessage());
             ui.errorMessage(ex.getMessage());
         }
 
         return code;
     }
 
-    Integer reqPost(String fullUrl, String headers, String cookies, DefaultMutableTreeNode node) {
+    Integer reqPost(String fullUrl, String headers, String cookies, DefaultMutableTreeNode req,
+            DefaultMutableTreeNode res) {
         Object json;
-        String resp;
+        String resp = "";
         Integer code = 0;
 
-        String data = repack(node);
+        String data = repack(req);
         StringEntity entity = new StringEntity(data, ContentType.APPLICATION_JSON);
 
         HttpClientBuilder builder = HttpClients.custom();
@@ -94,36 +105,40 @@ class APIConnector {
             post.setHeaders(buildHeaders(headers));
             HttpResponse response = httpclient.execute(post);
             code = response.getStatusLine().getStatusCode();
-            resp = EntityUtils.toString(response.getEntity());
 
-            if (!ui.getIgnorePref()) {
-                if (!resp.isEmpty()) {
-                    json = new JSONTokener(resp).nextValue();
+            if (response.getEntity() != null) {
+                resp = EntityUtils.toString(response.getEntity());
+            }
 
-                    if (json instanceof JSONArray) {
-                        isArray = true;
-                        node.setUserObject("Array");
-                    } else {
-                        isArray = false;
-                        node.setUserObject("Object");
-                    }
+            if (!resp.isEmpty()) {
+                json = new JSONTokener(resp).nextValue();
 
-                    ui.wipe();
-                    unpack(node, "", json, -1);
+                if (json instanceof JSONArray) {
+                    isArray = true;
+                    res.setUserObject("Response Array");
+                } else if (json instanceof JSONObject) {
+                    isArray = false;
+                    res.setUserObject("Response Object");
+                } else {
+                    ui.wipeRes();
+                    return code;
                 }
+
+                ui.wipeRes();
+                unpack(res, "", json, -1);
             }
 
         } catch (IOException | ParseException | IllegalArgumentException ex) {
-            //System.out.print(ex.getMessage());
+            // System.out.print(ex.getMessage());
             ui.errorMessage(ex.getMessage());
         }
 
         return code;
     }
 
-    Integer reqDelete(String fullUrl, String headers, String cookies, DefaultMutableTreeNode node) {
+    Integer reqDelete(String fullUrl, String headers, String cookies, DefaultMutableTreeNode res) {
         Object json;
-        String resp;
+        String resp = "";
         Integer code = 0;
 
         HttpClientBuilder builder = HttpClients.custom();
@@ -135,27 +150,31 @@ class APIConnector {
             delete.setHeaders(buildHeaders(headers));
             HttpResponse response = httpclient.execute(delete);
             code = response.getStatusLine().getStatusCode();
-            resp = EntityUtils.toString(response.getEntity());
 
-            if (!ui.getIgnorePref()) {
-                if (!resp.isEmpty()) {
-                    json = new JSONTokener(resp).nextValue();
+            if (response.getEntity() != null) {
+                resp = EntityUtils.toString(response.getEntity());
+            }
 
-                    if (json instanceof JSONArray) {
-                        isArray = true;
-                        node.setUserObject("Array");
-                    } else {
-                        isArray = false;
-                        node.setUserObject("Object");
-                    }
+            if (!resp.isEmpty()) {
+                json = new JSONTokener(resp).nextValue();
 
-                    ui.wipe();
-                    unpack(node, "", json, -1);
+                if (json instanceof JSONArray) {
+                    isArray = true;
+                    res.setUserObject("Response Array");
+                } else if (json instanceof JSONObject) {
+                    isArray = false;
+                    res.setUserObject("Response Object");
+                } else {
+                    ui.wipeRes();
+                    return code;
                 }
+
+                ui.wipeRes();
+                unpack(res, "", json, -1);
             }
 
         } catch (IOException | ParseException | IllegalArgumentException ex) {
-            //System.out.print(ex.getMessage());
+            // System.out.print(ex.getMessage());
             ui.errorMessage(ex.getMessage());
         }
 
@@ -244,43 +263,43 @@ class APIConnector {
             if (element.elementType.equals(Type.ARRAY)) {
                 Map<String, Object> obj = new HashMap<>();
                 parse(node, obj, "");
-                //System.out.println("a:" + obj.toString());
+                // System.out.println("a:" + obj.toString());
                 a.add(obj);
             } else if (element.elementType.equals(Type.ARRAYKEY)) {
                 ArrayList arr = new ArrayList<Map>();
                 parse(node, arr, node.toString());
-                //System.out.println("h:" + node.toString());
+                // System.out.println("h:" + node.toString());
                 h.put(node.toString(), arr);
             } else if (element.elementType.equals(Type.KEY)) {
                 if (node.getChildCount() > 1) {
                     Map<String, Object> newnode = new HashMap<>();
                     parse(node, newnode, node.toString());
                     if (h != null) {
-                        //System.out.println("hh:" + node.toString());
+                        // System.out.println("hh:" + node.toString());
                         h.put(node.toString(), newnode);
                     } else {
-                        //System.out.println("aa:" + newnode.toString());
+                        // System.out.println("aa:" + newnode.toString());
                         a.add(newnode);
                     }
-                    //look ahead for values
+                    // look ahead for values
                 } else if (node.getChildCount() == 1) {
                     DefaultMutableTreeNode innerNode = (DefaultMutableTreeNode) node.getFirstChild();
                     JsonElement innerElement = (JsonElement) innerNode.getUserObject();
-                    //special case - empty array
+                    // special case - empty array
                     if (innerElement.elementType.equals(Type.ARRAYKEY)) {
                         ArrayList arr = new ArrayList<Map>();
                         Map<String, Object> obj = new HashMap<>();
                         obj.put(innerElement.toString(), arr);
-                        //System.out.println("hhh:" + node.toString());
+                        // System.out.println("hhh:" + node.toString());
                         h.put(node.toString(), obj);
 
                     } else {
                         if (h != null) {
-                            //System.out.println("hhhh:" + node.toString());
-                            //special case - single key val pair
+                            // System.out.println("hhhh:" + node.toString());
+                            // special case - single key val pair
                             if (innerNode.getChildCount() > 0) {
                                 DefaultMutableTreeNode valNode = (DefaultMutableTreeNode) innerNode.getFirstChild();
-                                //System.out.println("KV:"+innerNode.toString()+","+valNode.toString());
+                                // System.out.println("KV:"+innerNode.toString()+","+valNode.toString());
                                 Map<String, Object> kv = new HashMap<>();
                                 kv.put(innerNode.toString(), valNode.toString());
                                 h.put(node.toString(), kv);
@@ -289,22 +308,22 @@ class APIConnector {
                             }
 
                         } else {
-                            //System.out.println("aaaa:" + innerElement.toString());
+                            // System.out.println("aaaa:" + innerElement.toString());
                             a.add(innerElement.elementObject);
                         }
                     }
                 } else {
                     if (h != null) {
-                        //System.out.println("hhhhh:" + node.toString());
+                        // System.out.println("hhhhh:" + node.toString());
                         h.put(node.toString(), new HashMap<>());
                     } else {
-                        //System.out.println("aaaaa:" + element.elementObject.toString());
+                        // System.out.println("aaaaa:" + element.elementObject.toString());
                         a.add(element.elementObject);
                     }
                 }
 
             } else {
-                //values should always be found by look-ahead
+                // values should always be found by look-ahead
                 System.out.println("UNEXPECTED:" + element.elementType);
             }
 
@@ -315,7 +334,7 @@ class APIConnector {
     void refresh(DefaultMutableTreeNode node) {
         String data = repack(node);
         System.out.println("data:" + data);
-        ui.wipe();
+        ui.wipeReq();
         if (isArray) {
             JSONArray newjson = new JSONArray(data);
             unpack(node, "", newjson, -1);
@@ -331,14 +350,21 @@ class APIConnector {
 
         if (json instanceof JSONArray) {
             isArray = true;
-            node.setUserObject("Array");
+            node.setUserObject("Request Array");
         } else {
             isArray = false;
-            node.setUserObject("Object");
+            node.setUserObject("Request Object");
         }
 
-        ui.wipe();
+        ui.wipeReq();
         unpack(node, "", json, -1);
+    }
+
+    void copyRes(DefaultMutableTreeNode source, DefaultMutableTreeNode target) {
+        String data = repack(source);
+        ui.wipeReq();
+        Object json = new JSONTokener(data).nextValue();
+        unpack(target, "", json, -1);
     }
 
     BasicCookieStore buildCookies(String rawCookies, String reqUrl) {

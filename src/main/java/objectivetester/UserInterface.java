@@ -15,19 +15,23 @@ interface UserInterface {
     String enterValue(String title);
 
     void errorMessage(String message);
-    
+
     boolean askQuestion(String questionText);
-    
+
     void delete(DefaultMutableTreeNode target);
-    
-    void wipe();
-    
+
+    void wipeRes();
+
+    void wipeReq();
+
     void refresh();
-    
+
     void update();
-    
-    boolean getIgnorePref();
-    
+
+    void copyRes(DefaultMutableTreeNode source, DefaultMutableTreeNode target);
+
+    boolean getOption1();
+
     void writeAssert(String node, String value);
-    
+
 }

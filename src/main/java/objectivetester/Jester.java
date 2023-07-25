@@ -31,10 +31,17 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
     //JSON Tester
     private ImageIcon icon;
-    DefaultMutableTreeNode rootNode;
-    private DefaultTreeModel treeModel;
-    JTree jTree;
-    private final JPopupMenu popup;
+
+    DefaultMutableTreeNode nodeReq;
+    private DefaultTreeModel tmReq;
+    JTree treeReq;
+
+    DefaultMutableTreeNode nodeRes;
+    private DefaultTreeModel tmRes;
+    JTree treeRes;
+
+    private final JPopupMenu popupReq;
+    private final JPopupMenu popupRes;
     private final APIConnector apiCon = new APIConnector(this);
     DefaultWriter writer;
     private final Preferences prefs;
@@ -46,12 +53,17 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     public Jester() {
         icon = new ImageIcon(getClass().getResource("/images/jester.png"));
 
-        rootNode = new DefaultMutableTreeNode("Object");
-        treeModel = new DefaultTreeModel(rootNode);
-        jTree = new JTree(treeModel);
+        nodeReq = new DefaultMutableTreeNode("Request");
+        tmReq = new DefaultTreeModel(nodeReq);
+        treeReq = new JTree(tmReq);
+
+        nodeRes = new DefaultMutableTreeNode("Response");
+        tmRes = new DefaultTreeModel(nodeRes);
+        treeRes = new JTree(tmRes);
 
         initComponents();
-        paneTree.setVisible(true);
+        paneRequest.setVisible(true);
+        paneResponse.setVisible(true);
 
         //redirect output to text area
         PrintStream printStream = new PrintStream(new OutputStream() {
@@ -65,41 +77,50 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         System.setErr(printStream);
 
         //create the popup menu
-        popup = new JPopupMenu();
-        MouseListener popupListener = new EventListener(popup, jTree, this);
+        popupReq = new JPopupMenu();
+        popupRes = new JPopupMenu();
+        MouseListener popupListenerReq = new ReqEventListener(popupReq, treeReq, this);
+        MouseListener popupListenerRes = new ResEventListener(popupRes, treeRes, this);
 
-        JMenuItem menuItem = new JMenuItem(Const.ASSERT);
-        menuItem.addActionListener((ActionListener) popupListener);
-        popup.add(menuItem);
+        JMenuItem menuItem;
+
+        //This should be only on response
+        menuItem = new JMenuItem(Const.ASSERT);
+        menuItem.addActionListener((ActionListener) popupListenerRes);
+        popupRes.add(menuItem);
+        treeRes.addMouseListener(popupListenerRes);
+
+        //This should only be on request
         menuItem = new JMenuItem(Const.EDIT);
-        menuItem.addActionListener((ActionListener) popupListener);
-        popup.add(menuItem);
+        menuItem.addActionListener((ActionListener) popupListenerReq);
+        popupReq.add(menuItem);
         menuItem = new JMenuItem(Const.INSERTK);
-        menuItem.addActionListener((ActionListener) popupListener);
-        popup.add(menuItem);
+        menuItem.addActionListener((ActionListener) popupListenerReq);
+        popupReq.add(menuItem);
         menuItem = new JMenuItem(Const.INSERTV);
-        menuItem.addActionListener((ActionListener) popupListener);
-        popup.add(menuItem);
+        menuItem.addActionListener((ActionListener) popupListenerReq);
+        popupReq.add(menuItem);
         menuItem = new JMenuItem(Const.DELETE);
-        menuItem.addActionListener((ActionListener) popupListener);
-        popup.add(menuItem);
+        menuItem.addActionListener((ActionListener) popupListenerReq);
+        popupReq.add(menuItem);
         menuItem = new JMenuItem(Const.REFRESH);
-        menuItem.addActionListener((ActionListener) popupListener);
-        popup.add(menuItem);
-        jTree.addMouseListener(popupListener);
+        menuItem.addActionListener((ActionListener) popupListenerReq);
+        popupReq.add(menuItem);
+        treeReq.addMouseListener(popupListenerReq);
 
         //get prefs
         prefs = Preferences.userRoot().node("jester");
         if (prefs.get("serviceURI", "").contentEquals("")) {
             //set defaults
-            prefs.putBoolean("optionIgnoreOther", false);
+            //prefs.putBoolean("option1", false);
             //prefs.putBoolean("option2", false);
             prefs.put("output", "junit");
             prefs.put("serviceURI", "https://httpbin.org/anything");
         }
         currentURI.setText(prefs.get("serviceURI", ""));
         serviceURI.setText((prefs.get("serviceURI", "")));
-        checkBoxIgnoreOther.setSelected(prefs.getBoolean("optionIgnoreOther", true));
+        //checkBox1.setSelected(prefs.getBoolean("option1", true));
+        //checkBox2.setSelected(prefs.getBoolean("option2", true));
         if (prefs.get("output", "").contentEquals("junit")) {
             buttonJunit.setSelected(true);
             writer = new TestWriter(this);
@@ -134,7 +155,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         labelDefuri = new javax.swing.JLabel();
         serviceURI = new javax.swing.JTextField();
         labelOpts = new javax.swing.JLabel();
-        checkBoxIgnoreOther = new javax.swing.JCheckBox();
+        checkBox1 = new javax.swing.JCheckBox();
         checkBox2 = new javax.swing.JCheckBox();
         labelOutput = new javax.swing.JLabel();
         buttonJunit = new javax.swing.JRadioButton();
@@ -154,7 +175,9 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         labelCookies = new javax.swing.JLabel();
         textCookies = new javax.swing.JTextField();
         jSplitPane1 = new javax.swing.JSplitPane();
-        paneTree = new javax.swing.JScrollPane(jTree);
+        paneRequest = new javax.swing.JScrollPane(treeReq);
+        paneResponse = new javax.swing.JScrollPane(treeRes);
+        jPanel2 = new javax.swing.JPanel();
         paneCode = new javax.swing.JScrollPane();
         code = new javax.swing.JTextArea();
         paneConsole = new javax.swing.JScrollPane();
@@ -162,6 +185,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         menuBar = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         menuImport = new javax.swing.JMenuItem();
+        menuCopyRes = new javax.swing.JMenuItem();
         menuExit = new javax.swing.JMenuItem();
         menuEdit = new javax.swing.JMenu();
         menuSettings = new javax.swing.JMenuItem();
@@ -194,7 +218,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         panelAbout.add(labelCopyright, gridBagConstraints);
-        labelCopyright.getAccessibleContext().setAccessibleName("© Steve Mellor 2019-2023");
 
         labelLink.setText("<html> <a href=\"https://github.com/objectivetester/jester\">Jester on github</a></html>");
         labelLink.setToolTipText("");
@@ -278,13 +301,13 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
         panelSettings.add(labelOpts, gridBagConstraints);
 
-        checkBoxIgnoreOther.setText("Only parse GET responses");
-        checkBoxIgnoreOther.setToolTipText("Only parse GET responses");
+        checkBox1.setText("Option1");
+        checkBox1.setToolTipText("Option1");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        panelSettings.add(checkBoxIgnoreOther, gridBagConstraints);
+        panelSettings.add(checkBox1, gridBagConstraints);
 
         checkBox2.setText("Option2");
         checkBox2.setToolTipText("Option2");
@@ -438,7 +461,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 688, Short.MAX_VALUE)
+            .addGap(0, 905, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addContainerGap()
@@ -447,7 +470,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 676, Short.MAX_VALUE)
+                    .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 893, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         jPanel1Layout.setVerticalGroup(
@@ -467,8 +490,15 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        paneTree.setPreferredSize(new java.awt.Dimension(300, 300));
-        jSplitPane1.setLeftComponent(paneTree);
+        jSplitPane1.setLastDividerLocation(-1);
+
+        paneRequest.setPreferredSize(new java.awt.Dimension(300, 300));
+        jSplitPane1.setLeftComponent(paneRequest);
+
+        paneResponse.setPreferredSize(new java.awt.Dimension(300, 300));
+        jSplitPane1.setRightComponent(paneResponse);
+
+        getContentPane().add(jSplitPane1, java.awt.BorderLayout.CENTER);
 
         paneCode.setPreferredSize(new java.awt.Dimension(300, 300));
 
@@ -479,27 +509,52 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         code.setTabSize(4);
         paneCode.setViewportView(code);
 
-        jSplitPane1.setRightComponent(paneCode);
-
-        getContentPane().add(jSplitPane1, java.awt.BorderLayout.CENTER);
-
         textConsole.setEditable(false);
         textConsole.setColumns(20);
         textConsole.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         textConsole.setRows(5);
         paneConsole.setViewportView(textConsole);
 
-        getContentPane().add(paneConsole, java.awt.BorderLayout.PAGE_END);
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(paneCode, javax.swing.GroupLayout.DEFAULT_SIZE, 905, Short.MAX_VALUE)
+                    .addComponent(paneConsole))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(paneCode, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(paneConsole, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
 
         menuFile.setText("File");
 
-        menuImport.setText("Import");
+        menuImport.setText("Import Request");
         menuImport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuImportActionPerformed(evt);
             }
         });
         menuFile.add(menuImport);
+
+        menuCopyRes.setText("Copy Response into Request");
+        menuCopyRes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuCopyResActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuCopyRes);
 
         menuExit.setText("Exit");
         menuExit.addActionListener(new java.awt.event.ActionListener() {
@@ -548,7 +603,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         //save new settings
         prefs.put("serviceURI", serviceURI.getText().trim());
 
-        prefs.putBoolean("optionIgnoreOther", checkBoxIgnoreOther.isSelected());
+        //prefs.putBoolean("option1", checkBox1.isSelected());
         //prefs.putBoolean("option2", checkBox2.isSelected());
         if (buttonJunit.isSelected()) {
             //if the output type has changed, reset
@@ -578,9 +633,9 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         }
 
         if (proceed) {
-            wipe();
+            wipeRes();
             System.out.print("GET " + currentURI.getText().trim() + " ");
-            int respCode = apiCon.reqGet(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), rootNode);
+            int respCode = apiCon.reqGet(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), nodeRes);
             System.out.println(respCode);
 
             writer.writeStart();
@@ -634,7 +689,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         // TODO add your handling code here:
         //restore original settings
         serviceURI.setText((prefs.get("serviceURI", "")));
-        checkBoxIgnoreOther.setSelected(prefs.getBoolean("optionIgnoreOther", true));
+        //checkBox1.setSelected(prefs.getBoolean("option1", true));
         //checkBox2.setSelected(prefs.getBoolean("option2", true));
 
         dialogSettings.setVisible(false);
@@ -650,9 +705,9 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             System.out.print("POST " + currentURI.getText().trim() + " ");
 
             //save the outgoing data with escaped doube quotes
-            String data = apiCon.repack(rootNode).replace("\"", "\\\"");
+            String data = apiCon.repack(nodeReq).replace("\"", "\\\"");
 
-            int respCode = apiCon.reqPost(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), rootNode);
+            int respCode = apiCon.reqPost(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), nodeReq, nodeRes);
             System.out.println(respCode);
 
             writer.writeStart();
@@ -673,7 +728,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         if (proceed) {
             System.out.print("DELETE " + currentURI.getText().trim() + " ");
 
-            int respCode = apiCon.reqDelete(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), rootNode);
+            int respCode = apiCon.reqDelete(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), nodeRes);
             System.out.println(respCode);
 
             writer.writeStart();
@@ -689,9 +744,14 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         // TODO add your handling code here:
         String rawjson = enterValue("import JSON data");
         if (rawjson != null) {
-            apiCon.importData(rawjson, rootNode);
+            apiCon.importData(rawjson, nodeReq);
         }
     }//GEN-LAST:event_menuImportActionPerformed
+
+    private void menuCopyResActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCopyResActionPerformed
+        // TODO add your handling code here:
+        apiCon.copyRes(nodeRes, nodeReq);
+    }//GEN-LAST:event_menuCopyResActionPerformed
 
     /**
      * @param args the command line arguments
@@ -735,13 +795,14 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private javax.swing.JButton buttonPOST;
     private javax.swing.JButton buttonSave;
     private javax.swing.ButtonGroup buttonsOutput;
+    private javax.swing.JCheckBox checkBox1;
     private javax.swing.JCheckBox checkBox2;
-    private javax.swing.JCheckBox checkBoxIgnoreOther;
     private javax.swing.JTextArea code;
     private javax.swing.JTextField currentURI;
     private javax.swing.JDialog dialogAbout;
     private javax.swing.JDialog dialogSettings;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
@@ -757,6 +818,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private javax.swing.JLabel labelUri;
     private javax.swing.JMenuItem menuAbout;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenuItem menuCopyRes;
     private javax.swing.JMenu menuEdit;
     private javax.swing.JMenuItem menuExit;
     private javax.swing.JMenu menuFile;
@@ -765,7 +827,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private javax.swing.JMenuItem menuSettings;
     private javax.swing.JScrollPane paneCode;
     private javax.swing.JScrollPane paneConsole;
-    private javax.swing.JScrollPane paneTree;
+    private javax.swing.JScrollPane paneRequest;
+    private javax.swing.JScrollPane paneResponse;
     private javax.swing.JPanel panelAbout;
     private javax.swing.JPanel panelSettings;
     private javax.swing.JTextField serviceURI;
@@ -830,29 +893,42 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
     @Override
     public void delete(DefaultMutableTreeNode target) {
-        treeModel.removeNodeFromParent(target);
+        tmReq.removeNodeFromParent(target);
     }
 
     @Override
-    public boolean getIgnorePref() {
-        return prefs.getBoolean("optionIgnoreOther", true);
+    public void copyRes(DefaultMutableTreeNode source, DefaultMutableTreeNode target) {
+        apiCon.copyRes(nodeRes, nodeReq);
+    }
+
+    @Override
+    public boolean getOption1() {
+        //not used
+        return prefs.getBoolean("option1", true);
     }
 
     @Override
     public void refresh() {
         //DELETEME - debug only
-        apiCon.refresh(rootNode);
+        apiCon.refresh(nodeReq);
     }
-    
+
     @Override
     public void update() {
-        jTree.updateUI();
+        treeReq.updateUI();
+        treeRes.updateUI();
     }
-    
+
     @Override
-    public void wipe() {
-        rootNode.removeAllChildren(); //this removes all nodes
-        treeModel.reload(); //this notifies the listeners and changes the GUI
+    public void wipeRes() {
+        nodeRes.removeAllChildren(); //this removes all nodes
+        tmRes.reload(); //this notifies the listeners and changes the GUI
+    }
+
+    @Override
+    public void wipeReq() {
+        nodeReq.removeAllChildren(); //this removes all nodes
+        tmReq.reload(); //this notifies the listeners and changes the GUI
     }
 
 }

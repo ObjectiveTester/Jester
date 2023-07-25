@@ -13,7 +13,7 @@ import javax.swing.tree.TreePath;
  *
  * @author Steve
  */
-class EventListener extends MouseAdapter implements ActionListener {
+class ReqEventListener extends MouseAdapter implements ActionListener {
 
     JPopupMenu popup;
     JTree tree;
@@ -22,7 +22,7 @@ class EventListener extends MouseAdapter implements ActionListener {
     TreePath nodePath;
     DefaultMutableTreeNode nodeSelected;
 
-    EventListener(JPopupMenu popup, JTree tree, UserInterface ui) {
+    ReqEventListener(JPopupMenu popup, JTree tree, UserInterface ui) {
         this.popup = popup;
         this.tree = tree;
         this.ui = ui;
@@ -46,7 +46,6 @@ class EventListener extends MouseAdapter implements ActionListener {
     private void popupEvent(MouseEvent e) {
         if (e.isPopupTrigger()) {
             //reenable all choices
-            popup.getComponent(Const.POP_ASSERT).setEnabled(true); //assert
             popup.getComponent(Const.POP_EDIT).setEnabled(true);   //edit
             popup.getComponent(Const.POP_INS_K).setEnabled(true);  //insert key
             popup.getComponent(Const.POP_INS_V).setEnabled(true);  //insert value
@@ -64,7 +63,6 @@ class EventListener extends MouseAdapter implements ActionListener {
 
             //block all edit options when nothing selected
             if (nodeSelected == null) {
-                popup.getComponent(Const.POP_ASSERT).setEnabled(false); //assert
                 popup.getComponent(Const.POP_EDIT).setEnabled(false);   //edit
                 popup.getComponent(Const.POP_INS_K).setEnabled(false);  //insert key
                 popup.getComponent(Const.POP_INS_V).setEnabled(false);  //insert value
@@ -72,7 +70,6 @@ class EventListener extends MouseAdapter implements ActionListener {
             }
             //block edit options on root
             if ((nodeSelected != null) && (nodeSelected.isRoot())) {
-                popup.getComponent(Const.POP_ASSERT).setEnabled(false); //assert
                 popup.getComponent(Const.POP_EDIT).setEnabled(false);   //edit
                 popup.getComponent(Const.POP_INS_V).setEnabled(false);  //insert value
                 popup.getComponent(Const.POP_DEL).setEnabled(false);    //delete
@@ -105,7 +102,6 @@ class EventListener extends MouseAdapter implements ActionListener {
             if ((nodeSelected != null) && (!nodeSelected.isRoot())) {
                 JsonElement element = (JsonElement) nodeSelected.getUserObject();
                 if (element.elementType.equals(Type.ARRAY)) {
-                    popup.getComponent(Const.POP_ASSERT).setEnabled(false); //assert
                     popup.getComponent(Const.POP_EDIT).setEnabled(false);   //edit
                     popup.getComponent(Const.POP_INS_V).setEnabled(false);  //insert value
                 }
@@ -114,17 +110,9 @@ class EventListener extends MouseAdapter implements ActionListener {
             if ((nodeSelected != null) && (!nodeSelected.isRoot())) {
                 JsonElement element = (JsonElement) nodeSelected.getUserObject();
                 if (element.elementType.equals(Type.ARRAYKEY)) {
-                    popup.getComponent(Const.POP_ASSERT).setEnabled(false); //assert
                     popup.getComponent(Const.POP_EDIT).setEnabled(false);   //edit
                     popup.getComponent(Const.POP_INS_K).setEnabled(false);  //insert key
                     popup.getComponent(Const.POP_INS_V).setEnabled(false);  //insert value
-                }
-            }
-            //block assert on key
-            if ((nodeSelected != null) && (!nodeSelected.isRoot())) {
-                JsonElement element = (JsonElement) nodeSelected.getUserObject();
-                if (element.elementType.equals(Type.KEY)) {
-                    popup.getComponent(Const.POP_ASSERT).setEnabled(false); //assert
                 }
             }
 
