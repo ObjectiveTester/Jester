@@ -18,7 +18,6 @@ class ReqEventListener extends MouseAdapter implements ActionListener {
     JPopupMenu popup;
     JTree tree;
     UserInterface ui;
-    int current;
     TreePath nodePath;
     DefaultMutableTreeNode nodeSelected;
 
@@ -110,8 +109,8 @@ class ReqEventListener extends MouseAdapter implements ActionListener {
             if ((nodeSelected != null) && (!nodeSelected.isRoot())) {
                 JsonElement element = (JsonElement) nodeSelected.getUserObject();
                 if (element.elementType.equals(Type.ARRAYKEY)) {
-                    popup.getComponent(Const.POP_EDIT).setEnabled(false);   //edit
-                    popup.getComponent(Const.POP_INS_K).setEnabled(false);  //insert key
+                    //popup.getComponent(Const.POP_EDIT).setEnabled(false);   //edit
+                    //popup.getComponent(Const.POP_INS_K).setEnabled(false);  //insert key
                     popup.getComponent(Const.POP_INS_V).setEnabled(false);  //insert value
                 }
             }
@@ -152,31 +151,6 @@ class ReqEventListener extends MouseAdapter implements ActionListener {
                 }
             }
 
-        }
-
-        if (e.getActionCommand().contentEquals(Const.ASSERT)) {
-            JsonElement element = (JsonElement) nodeSelected.getUserObject();
-            String elementPath = "";
-            for (int count = 0; count < nodePath.getPath().length; count++) {
-                DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) nodePath.getPath()[count];
-
-                if (!treeNode.isRoot() && count < nodePath.getPath().length - 1) {
-                    //not the root or last
-                    element = (JsonElement) treeNode.getUserObject();
-                    if (element.elementType.equals(Type.ARRAY)) {
-                        if (elementPath.length() != 0) {
-                            elementPath = elementPath.substring(0, elementPath.length() - 1);
-                        }
-                        elementPath = elementPath + "[" + element.elementObject.toString() + "]";
-                    } else {
-                        elementPath = elementPath + element.elementObject.toString();
-                    }
-                    if (count < nodePath.getPath().length - 2) {
-                        elementPath = elementPath + ".";
-                    }
-                }
-            }
-            ui.writeAssert(elementPath, nodeSelected.toString());
         }
 
         if (e.getActionCommand().contentEquals(Const.INSERTK)) {

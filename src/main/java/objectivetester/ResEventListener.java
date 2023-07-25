@@ -18,7 +18,6 @@ class ResEventListener extends MouseAdapter implements ActionListener {
     JPopupMenu popup;
     JTree tree;
     UserInterface ui;
-    int current;
     TreePath nodePath;
     DefaultMutableTreeNode nodeSelected;
 
@@ -45,7 +44,7 @@ class ResEventListener extends MouseAdapter implements ActionListener {
 
     private void popupEvent(MouseEvent e) {
         if (e.isPopupTrigger()) {
-            //reenable all choices
+            //reenable option
             popup.getComponent(Const.POP_ASSERT).setEnabled(true); //assert
 
             nodePath = tree.getPathForLocation(e.getPoint().x, e.getPoint().y);
@@ -57,11 +56,11 @@ class ResEventListener extends MouseAdapter implements ActionListener {
             //disable choices that are invalid for the item selected
             //for example, empty space or value, etc.
 
-            //block all edit options when nothing selected
+            //block all options when nothing selected
             if (nodeSelected == null) {
                 popup.getComponent(Const.POP_ASSERT).setEnabled(false); //assert
             }
-            //block edit options on root
+            //block options on root
             if ((nodeSelected != null) && (nodeSelected.isRoot())) {
                 popup.getComponent(Const.POP_ASSERT).setEnabled(false); //assert
             }

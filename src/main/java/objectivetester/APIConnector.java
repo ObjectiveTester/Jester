@@ -37,6 +37,7 @@ class APIConnector {
 
     UserInterface ui;
     Boolean isArray = false;
+    Long startTime;
 
     APIConnector(UserInterface ui) {
         this.ui = ui;
@@ -50,14 +51,20 @@ class APIConnector {
         HttpClientBuilder builder = HttpClients.custom();
         builder.setRedirectStrategy(new LaxRedirectStrategy());
         HttpClient httpclient = builder.setDefaultCookieStore(buildCookies(cookies, fullUrl)).build();
+        startTime = System.currentTimeMillis();
+
         try {
             HttpGet get = new HttpGet(fullUrl);
             get.setHeaders(buildHeaders(headers));
             HttpResponse response = httpclient.execute(get);
             code = response.getStatusLine().getStatusCode();
+            System.out.print(code);
+            System.out.print(" " + response.getStatusLine().getReasonPhrase());
+            System.out.print(" " + (System.currentTimeMillis() - startTime)+ "ms");
 
             if (response.getEntity() != null) {
                 resp = EntityUtils.toString(response.getEntity());
+                System.out.print(" " + resp.length() + "B");
             }
 
             if (!resp.isEmpty()) {
@@ -98,6 +105,7 @@ class APIConnector {
         HttpClientBuilder builder = HttpClients.custom();
         builder.setRedirectStrategy(new LaxRedirectStrategy());
         HttpClient httpclient = builder.setDefaultCookieStore(buildCookies(cookies, fullUrl)).build();
+        startTime = System.currentTimeMillis();
 
         try {
             HttpPost post = new HttpPost(fullUrl);
@@ -105,9 +113,13 @@ class APIConnector {
             post.setHeaders(buildHeaders(headers));
             HttpResponse response = httpclient.execute(post);
             code = response.getStatusLine().getStatusCode();
+            System.out.print(code);
+            System.out.print(" " + response.getStatusLine().getReasonPhrase());
+            System.out.print(" " + (System.currentTimeMillis() - startTime)+ "ms");
 
             if (response.getEntity() != null) {
                 resp = EntityUtils.toString(response.getEntity());
+                System.out.print(" " + resp.length() + "B");
             }
 
             if (!resp.isEmpty()) {
@@ -144,15 +156,20 @@ class APIConnector {
         HttpClientBuilder builder = HttpClients.custom();
         builder.setRedirectStrategy(new LaxRedirectStrategy());
         HttpClient httpclient = builder.setDefaultCookieStore(buildCookies(cookies, fullUrl)).build();
-
+        startTime = System.currentTimeMillis();
+        
         try {
             HttpDelete delete = new HttpDelete(fullUrl);
             delete.setHeaders(buildHeaders(headers));
             HttpResponse response = httpclient.execute(delete);
             code = response.getStatusLine().getStatusCode();
-
+            System.out.print(code);
+            System.out.print(" " + response.getStatusLine().getReasonPhrase());
+            System.out.print(" " + (System.currentTimeMillis() - startTime)+ "ms");
+            
             if (response.getEntity() != null) {
                 resp = EntityUtils.toString(response.getEntity());
+                System.out.print(" " + resp.length() + "B");
             }
 
             if (!resp.isEmpty()) {

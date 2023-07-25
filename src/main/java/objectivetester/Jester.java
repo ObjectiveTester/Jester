@@ -1,5 +1,9 @@
 package objectivetester;
 
+/**
+ *
+ * @author Steve
+ */
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
@@ -23,10 +27,6 @@ import javax.swing.tree.DefaultTreeModel;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.FlatDarkLaf;
 
-/**
- *
- * @author Steve
- */
 public class Jester extends javax.swing.JFrame implements UserInterface, ActionListener {
 
     //JSON Tester
@@ -118,7 +118,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             prefs.put("serviceURI", "https://httpbin.org/anything");
         }
         currentURI.setText(prefs.get("serviceURI", ""));
-        serviceURI.setText((prefs.get("serviceURI", "")));
+        serviceURI.setText(prefs.get("serviceURI", ""));
         //checkBox1.setSelected(prefs.getBoolean("option1", true));
         //checkBox2.setSelected(prefs.getBoolean("option2", true));
         if (prefs.get("output", "").contentEquals("junit")) {
@@ -636,7 +636,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             wipeRes();
             System.out.print("GET " + currentURI.getText().trim() + " ");
             int respCode = apiCon.reqGet(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), nodeRes);
-            System.out.println(respCode);
+            //System.out.println(respCode);
+            System.out.println();
 
             writer.writeStart();
             writer.writeGet(currentURI.getText().trim(), respCode, textHeaders.getText(), textCookies.getText());
@@ -647,7 +648,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     }//GEN-LAST:event_buttonGETActionPerformed
 
     private void labelLinkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelLinkMouseClicked
-        // TODO add your handling code here:
         if (Desktop.isDesktopSupported()) {
             try {
                 Desktop.getDesktop().browse(new URI("https://github.com/objectivetester/jester"));
@@ -660,33 +660,27 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     }//GEN-LAST:event_labelLinkMouseClicked
 
     private void labelLinkMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelLinkMouseEntered
-        // TODO add your handling code here:
         labelLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }//GEN-LAST:event_labelLinkMouseEntered
 
     private void menuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuExitActionPerformed
-        // TODO add your handling code here:
         dispose();
         System.exit(0);
     }//GEN-LAST:event_menuExitActionPerformed
 
     private void menuSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSettingsActionPerformed
-        // TODO add your handling code here:
         dialogSettings.setVisible(true);
     }//GEN-LAST:event_menuSettingsActionPerformed
 
     private void menuAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAboutActionPerformed
-        // TODO add your handling code here:
         dialogAbout.setVisible(true);
     }//GEN-LAST:event_menuAboutActionPerformed
 
     private void buttonCoolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCoolActionPerformed
-        // TODO add your handling code here:
         dialogAbout.setVisible(false);
     }//GEN-LAST:event_buttonCoolActionPerformed
 
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
-        // TODO add your handling code here:
         //restore original settings
         serviceURI.setText((prefs.get("serviceURI", "")));
         //checkBox1.setSelected(prefs.getBoolean("option1", true));
@@ -708,7 +702,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             String data = apiCon.repack(nodeReq).replace("\"", "\\\"");
 
             int respCode = apiCon.reqPost(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), nodeReq, nodeRes);
-            System.out.println(respCode);
+            //System.out.println(respCode);
+            System.out.println();
 
             writer.writeStart();
             writer.writePost(currentURI.getText().trim(), data, respCode, textHeaders.getText(), textCookies.getText());
@@ -729,7 +724,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             System.out.print("DELETE " + currentURI.getText().trim() + " ");
 
             int respCode = apiCon.reqDelete(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), nodeRes);
-            System.out.println(respCode);
+            //System.out.println(respCode);
+            System.out.println();
 
             writer.writeStart();
             writer.writeDelete(currentURI.getText().trim(), respCode, textHeaders.getText(), textCookies.getText());
@@ -741,7 +737,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     }//GEN-LAST:event_buttonDELETEActionPerformed
 
     private void menuImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuImportActionPerformed
-        // TODO add your handling code here:
         String rawjson = enterValue("import JSON data");
         if (rawjson != null) {
             apiCon.importData(rawjson, nodeReq);
@@ -749,7 +744,6 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     }//GEN-LAST:event_menuImportActionPerformed
 
     private void menuCopyResActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCopyResActionPerformed
-        // TODO add your handling code here:
         apiCon.copyRes(nodeRes, nodeReq);
     }//GEN-LAST:event_menuCopyResActionPerformed
 
