@@ -191,8 +191,8 @@
             </Component>
             <Component class="javax.swing.JCheckBox" name="checkBox1">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Option1"/>
-                <Property name="toolTipText" type="java.lang.String" value="Option1"/>
+                <Property name="text" type="java.lang.String" value="Manage Cookies"/>
+                <Property name="toolTipText" type="java.lang.String" value="Manage Cookies"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -538,6 +538,12 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Authorization=Bearer abcde"/>
                 <Property name="toolTipText" type="java.lang.String" value="Comma seperated list of headers (e.g. Header=foo)"/>
+                <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[275, 23]"/>
+                </Property>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[275, 23]"/>
+                </Property>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="labelCookies">
@@ -547,8 +553,13 @@
             </Component>
             <Component class="javax.swing.JTextField" name="textCookies">
               <Properties>
-                <Property name="text" type="java.lang.String" value="JSESSIONID=1234"/>
                 <Property name="toolTipText" type="java.lang.String" value="Comma seperated list of cookies (e.g. ID=foo)"/>
+                <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[275, 23]"/>
+                </Property>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[275, 23]"/>
+                </Property>
               </Properties>
             </Component>
           </SubComponents>

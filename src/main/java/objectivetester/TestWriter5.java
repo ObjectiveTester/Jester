@@ -15,6 +15,7 @@ class TestWriter5 extends DefaultWriter {
     void writeHeader() {
 
         ui.addCode("import static io.restassured.RestAssured.given;\n"
+                + "import io.restassured.filter.cookie.CookieFilter;\n"
                 + "import static org.hamcrest.Matchers.equalTo;\n"
                 + "import org.junit.jupiter.api.AfterAll;\n"
                 + "import org.junit.jupiter.api.AfterEach;\n"
@@ -29,6 +30,8 @@ class TestWriter5 extends DefaultWriter {
                 + ""
                 + "\n"
                 + "public class RecordedTest {\n"
+                + "\n"
+                + "    CookieFilter cookieFilter = new CookieFilter();\n"
                 + "\n"
                 + "    public RecordedTest() {\n"
                 + "    }\n"

@@ -67,6 +67,8 @@ class APIConnector {
                 System.out.print(" " + resp.length() + "B");
             }
 
+            ui.newCookies(extractCookies(response));
+
             if (!resp.isEmpty()) {
                 json = new JSONTokener(resp).nextValue();
 
@@ -121,6 +123,8 @@ class APIConnector {
                 System.out.print(" " + resp.length() + "B");
             }
 
+            ui.newCookies(extractCookies(response));
+
             if (!resp.isEmpty()) {
                 json = new JSONTokener(resp).nextValue();
 
@@ -169,6 +173,8 @@ class APIConnector {
                 resp = EntityUtils.toString(response.getEntity());
                 System.out.print(" " + resp.length() + "B");
             }
+
+            ui.newCookies(extractCookies(response));
 
             if (!resp.isEmpty()) {
                 json = new JSONTokener(resp).nextValue();
@@ -431,6 +437,18 @@ class APIConnector {
         }
         return headerGroup.getAllHeaders();
 
+    }
+
+    String extractCookies(HttpResponse response) {
+            String resCookies="";;
+            Header[] resHeaders = response.getHeaders("Set-Cookie");
+            for (Header resH : resHeaders) {
+                resCookies = resCookies+resH.getValue().split(";")[0] + ", ";
+            }
+            if (!resCookies.isEmpty()) {
+                resCookies = resCookies.substring(0, resCookies.lastIndexOf(",") -1);
+            }
+            return resCookies;
     }
 
 }

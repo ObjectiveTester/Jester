@@ -30,8 +30,10 @@ interface UserInterface {
 
     void copyRes(DefaultMutableTreeNode source, DefaultMutableTreeNode target);
 
-    boolean getOption1();
+    boolean getOption();
 
     void writeAssert(String node, String value);
+
+    void newCookies(String cookies);
 
 }

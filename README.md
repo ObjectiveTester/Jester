@@ -84,4 +84,4 @@ Jester works with:
 - **API Keys** - by including the key as a query string, header or cookie
 - **Basic auth** by including the user:passwd as Base64 in a header - e.g. `Authorization=Basic dXNlcjpwYXNzd2Q=`
 - **Bearer token** - by including the token in a header - e.g. `Authorization=Bearer abcde....`
-- **Cookie auth** - setting cookies works, extracting them isn't implemented yet
+- **Cookie auth** - cookies can be set and are extracted from responses, they may need to be cleaned up in the tests.

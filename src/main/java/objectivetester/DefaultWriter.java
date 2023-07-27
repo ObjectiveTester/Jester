@@ -60,7 +60,7 @@ public class DefaultWriter {
         }
 
         ui.insertCode("\n        //get:" + url + "\n"
-                + "        given().when()" + testHeaders + testCookies + ".get(\"" + url + "\").then()\n"
+                + "        given().filter(cookieFilter).when()" + testHeaders + testCookies + ".get(\"" + url + "\").then()\n"
                 + "        .statusCode(" + code + ");\n"
                 + "", footer);
     }
@@ -92,7 +92,7 @@ public class DefaultWriter {
 
         ui.insertCode("\n        //post:" + url + "\n"
                 + "        String data = \"" + data + "\";\n"
-                + "        given().when()" + testHeaders + testCookies + ".contentType(\"application/json\")"
+                + "        given().filter(cookieFilter).when()" + testHeaders + testCookies + ".contentType(\"application/json\")"
                 + ".body(data).post(\"" + url + "\").then()\n"
                 + "        .statusCode(" + code + ");\n"
                 + "", footer);
@@ -124,7 +124,7 @@ public class DefaultWriter {
         }
 
         ui.insertCode("\n        //delete:" + url + "\n"
-                + "        given().when()" + testHeaders + testCookies + ".delete(\"" + url + "\").then()\n"
+                + "        given().filter(cookieFilter).when()" + testHeaders + testCookies + ".delete(\"" + url + "\").then()\n"
                 + "        .statusCode(" + code + ");\n"
                 + "", footer);
     }

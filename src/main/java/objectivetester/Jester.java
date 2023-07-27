@@ -46,6 +46,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     DefaultWriter writer;
     private final Preferences prefs;
     String lastUsedURI = "";
+    String updatedCookies="";
 
     /**
      * Creates new form
@@ -112,14 +113,14 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         prefs = Preferences.userRoot().node("jester");
         if (prefs.get("serviceURI", "").contentEquals("")) {
             //set defaults
-            //prefs.putBoolean("option1", false);
+            prefs.putBoolean("manageCookies", true);
             //prefs.putBoolean("option2", false);
-            prefs.put("output", "junit");
+            prefs.put("output", "junit5");
             prefs.put("serviceURI", "https://httpbin.org/anything");
         }
         currentURI.setText(prefs.get("serviceURI", ""));
         serviceURI.setText(prefs.get("serviceURI", ""));
-        //checkBox1.setSelected(prefs.getBoolean("option1", true));
+        checkBox1.setSelected(prefs.getBoolean("manageCookies", true));
         //checkBox2.setSelected(prefs.getBoolean("option2", true));
         if (prefs.get("output", "").contentEquals("junit")) {
             buttonJunit.setSelected(true);
@@ -301,8 +302,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
         panelSettings.add(labelOpts, gridBagConstraints);
 
-        checkBox1.setText("Option1");
-        checkBox1.setToolTipText("Option1");
+        checkBox1.setText("Manage Cookies");
+        checkBox1.setToolTipText("Manage Cookies");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -449,13 +450,16 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
 
         textHeaders.setText("Authorization=Bearer abcde");
         textHeaders.setToolTipText("Comma seperated list of headers (e.g. Header=foo)");
+        textHeaders.setMinimumSize(new java.awt.Dimension(275, 23));
+        textHeaders.setPreferredSize(new java.awt.Dimension(275, 23));
         jToolBar2.add(textHeaders);
 
         labelCookies.setText("Cookies");
         jToolBar2.add(labelCookies);
 
-        textCookies.setText("JSESSIONID=1234");
         textCookies.setToolTipText("Comma seperated list of cookies (e.g. ID=foo)");
+        textCookies.setMinimumSize(new java.awt.Dimension(275, 23));
+        textCookies.setPreferredSize(new java.awt.Dimension(275, 23));
         jToolBar2.add(textCookies);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -604,8 +608,9 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         //save new settings
         prefs.put("serviceURI", serviceURI.getText().trim());
 
-        //prefs.putBoolean("option1", checkBox1.isSelected());
+        prefs.putBoolean("manageCookies", checkBox1.isSelected());
         //prefs.putBoolean("option2", checkBox2.isSelected());
+
         if (buttonJunit.isSelected()) {
             //if the output type has changed, reset
             if (prefs.get("output", "").contentEquals("junit5")) {
@@ -637,13 +642,15 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             wipeRes();
             System.out.print("GET " + currentURI.getText().trim() + " ");
             int respCode = apiCon.reqGet(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), nodeRes);
-            //System.out.println(respCode);
             System.out.println();
 
             writer.writeStart();
             writer.writeGet(currentURI.getText().trim(), respCode, textHeaders.getText(), textCookies.getText());
             writer.writeEnd();
 
+            if (!updatedCookies.isEmpty() && prefs.getBoolean("manageCookies", true)) {
+                textCookies.setText(updatedCookies);
+            }
             lastUsedURI = currentURI.getText().trim();
         }
     }//GEN-LAST:event_buttonGETActionPerformed
@@ -684,7 +691,7 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCancelActionPerformed
         //restore original settings
         serviceURI.setText((prefs.get("serviceURI", "")));
-        //checkBox1.setSelected(prefs.getBoolean("option1", true));
+        checkBox1.setSelected(prefs.getBoolean("manageCookies", true));
         //checkBox2.setSelected(prefs.getBoolean("option2", true));
 
         dialogSettings.setVisible(false);
@@ -703,13 +710,15 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             String data = apiCon.repack(nodeReq).replace("\"", "\\\"");
 
             int respCode = apiCon.reqPost(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), nodeReq, nodeRes);
-            //System.out.println(respCode);
             System.out.println();
 
             writer.writeStart();
             writer.writePost(currentURI.getText().trim(), data, respCode, textHeaders.getText(), textCookies.getText());
             writer.writeEnd();
 
+            if (!updatedCookies.isEmpty() && prefs.getBoolean("manageCookies", true)) {
+                textCookies.setText(updatedCookies);
+            }
             lastUsedURI = currentURI.getText().trim();
         }
 
@@ -725,13 +734,15 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
             System.out.print("DELETE " + currentURI.getText().trim() + " ");
 
             int respCode = apiCon.reqDelete(currentURI.getText().trim(), textHeaders.getText(), textCookies.getText(), nodeRes);
-            //System.out.println(respCode);
             System.out.println();
 
             writer.writeStart();
             writer.writeDelete(currentURI.getText().trim(), respCode, textHeaders.getText(), textCookies.getText());
             writer.writeEnd();
 
+            if (!updatedCookies.isEmpty() && prefs.getBoolean("manageCookies", true)) {
+                textCookies.setText(updatedCookies);
+            }
             lastUsedURI = currentURI.getText().trim();
         }
 
@@ -897,9 +908,9 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     }
 
     @Override
-    public boolean getOption1() {
+    public boolean getOption() {
         //not used
-        return prefs.getBoolean("option1", true);
+        return prefs.getBoolean("optionX", true);
     }
 
     @Override
@@ -926,4 +937,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         tmReq.reload(); //this notifies the listeners and changes the GUI
     }
 
+    @Override
+    public void newCookies(String cookies) {
+        updatedCookies = cookies;
+    }
 }
