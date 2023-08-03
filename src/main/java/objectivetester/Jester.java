@@ -122,14 +122,14 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         serviceURI.setText(prefs.get("serviceURI", ""));
         checkBox1.setSelected(prefs.getBoolean("manageCookies", true));
         //checkBox2.setSelected(prefs.getBoolean("option2", true));
-        if (prefs.get("output", "").contentEquals("junit")) {
-            buttonJunit.setSelected(true);
-            writer = new TestWriter(this);
-            writer.writeHeader();
-        }
         if (prefs.get("output", "").contentEquals("junit5")) {
             buttonJunit5.setSelected(true);
             writer = new TestWriter5(this);
+            writer.writeHeader();
+        }
+        if (prefs.get("output", "").contentEquals("testng")) {
+            buttonTestNG.setSelected(true);
+            writer = new TestWriterNG(this);
             writer.writeHeader();
         }
     }
@@ -159,8 +159,8 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         checkBox1 = new javax.swing.JCheckBox();
         checkBox2 = new javax.swing.JCheckBox();
         labelOutput = new javax.swing.JLabel();
-        buttonJunit = new javax.swing.JRadioButton();
         buttonJunit5 = new javax.swing.JRadioButton();
+        buttonTestNG = new javax.swing.JRadioButton();
         buttonSave = new javax.swing.JButton();
         buttonCancel = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
@@ -327,21 +327,21 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
         panelSettings.add(labelOutput, gridBagConstraints);
 
-        buttonsOutput.add(buttonJunit);
-        buttonJunit.setText("JUnit");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        panelSettings.add(buttonJunit, gridBagConstraints);
-
         buttonsOutput.add(buttonJunit5);
         buttonJunit5.setText("JUnit5");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         panelSettings.add(buttonJunit5, gridBagConstraints);
+
+        buttonsOutput.add(buttonTestNG);
+        buttonTestNG.setText("TestNG");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        panelSettings.add(buttonTestNG, gridBagConstraints);
 
         buttonSave.setText("Save");
         buttonSave.addActionListener(new java.awt.event.ActionListener() {
@@ -611,23 +611,23 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
         prefs.putBoolean("manageCookies", checkBox1.isSelected());
         //prefs.putBoolean("option2", checkBox2.isSelected());
 
-        if (buttonJunit.isSelected()) {
-            //if the output type has changed, reset
-            if (prefs.get("output", "").contentEquals("junit5")) {
-                code.setText("");
-                writer = new TestWriter(this);
-                writer.writeHeader();
-            }
-            prefs.put("output", "junit");
-        }
         if (buttonJunit5.isSelected()) {
             //if the output type has changed, reset
-            if (prefs.get("output", "").contentEquals("junit")) {
+            if (prefs.get("output", "").contentEquals("testng")) {
                 code.setText("");
                 writer = new TestWriter5(this);
                 writer.writeHeader();
             }
             prefs.put("output", "junit5");
+        }
+        if (buttonTestNG.isSelected()) {
+            //if the output type has changed, reset
+            if (prefs.get("output", "").contentEquals("junit5")) {
+                code.setText("");
+                writer = new TestWriterNG(this);
+                writer.writeHeader();
+            }
+            prefs.put("output", "testng");
         }
         dialogSettings.setVisible(false);
     }//GEN-LAST:event_buttonSaveActionPerformed
@@ -796,10 +796,10 @@ public class Jester extends javax.swing.JFrame implements UserInterface, ActionL
     private javax.swing.JButton buttonCool;
     private javax.swing.JButton buttonDELETE;
     private javax.swing.JButton buttonGET;
-    private javax.swing.JRadioButton buttonJunit;
     private javax.swing.JRadioButton buttonJunit5;
     private javax.swing.JButton buttonPOST;
     private javax.swing.JButton buttonSave;
+    private javax.swing.JRadioButton buttonTestNG;
     private javax.swing.ButtonGroup buttonsOutput;
     private javax.swing.JCheckBox checkBox1;
     private javax.swing.JCheckBox checkBox2;

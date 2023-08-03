@@ -21,16 +21,16 @@ Build a package from the command line with:
 Running Jester
 ==============
 
-Once built, either double-click 'Jester-0.4.jar' in the 'target' folder or start from the command line with:
+Once built, either double-click 'Jester-0.5.jar' in the 'target' folder or start from the command line with:
 
-    java -jar target/Jester-0.4.jar
+    java -jar target/Jester-0.5.jar
     
 
 
 
 Testing REST API's
 ============
-Jester can GET, POST, DELETE and assert on values in responses and all of these operations generate Java statements using either Junit4 or Junit5.
+Jester can GET, POST, DELETE and assert on values in responses and all of these operations generate Java statements using either Junit5 or TestNG.
 
 
 POST
@@ -53,6 +53,7 @@ ASSERT
 ------
 Right-click on a value in the Response Object tree and assert on it.
 
+In the lower frame, Java statements are generated. These should be runnable from an IDE, etc. after a little cleanup.
 
 JSON editing
 ------------
@@ -71,8 +72,6 @@ Add query parameters to the request by adding them to the URI - e.g.
 
     q=test&type=debug
 
-
-In the right hand frame, Java statements are generated. These should be runnable from an IDE, etc. after a little cleanup.
 
 
 
