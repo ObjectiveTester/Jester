@@ -256,7 +256,7 @@ class APIConnector {
     String repack(DefaultMutableTreeNode parent) {
 
         if (isArray) {
-            ArrayList arr = new ArrayList<Map>();
+            ArrayList<Map<String, Object>> arr = new ArrayList<Map<String, Object>>();
             parse(parent, arr, null);
             return new JSONArray(arr).toString();
         } else {
@@ -269,12 +269,12 @@ class APIConnector {
 
     void parse(DefaultMutableTreeNode treeParent, Object parent, String key) {
         Enumeration<TreeNode> e = treeParent.children();
-        HashMap h = null;
-        ArrayList a = null;
+        HashMap<String, Object> h = null;
+        ArrayList<Object> a = null;
         if (parent instanceof Map) {
-            h = (HashMap) parent;
+            h = (HashMap<String, Object>) parent;
         } else if (parent instanceof ArrayList) {
-            a = (ArrayList) parent;
+            a = (ArrayList<Object>) parent;
         }
 
         while (e.hasMoreElements()) {
@@ -286,7 +286,7 @@ class APIConnector {
                 // System.out.println("a:" + obj.toString());
                 a.add(obj);
             } else if (element.elementType.equals(Type.ARRAYKEY)) {
-                ArrayList arr = new ArrayList<Map>();
+                ArrayList<Map<String, Object>> arr = new ArrayList<Map<String, Object>>();
                 parse(node, arr, node.toString());
                 // System.out.println("h:" + node.toString());
                 h.put(node.toString(), arr);
@@ -307,7 +307,7 @@ class APIConnector {
                     JsonElement innerElement = (JsonElement) innerNode.getUserObject();
                     // special case - empty array
                     if (innerElement.elementType.equals(Type.ARRAYKEY)) {
-                        ArrayList arr = new ArrayList<Map>();
+                        ArrayList<Map<String, Object>> arr = new ArrayList<Map<String, Object>>();
                         Map<String, Object> obj = new HashMap<>();
                         obj.put(innerElement.toString(), arr);
                         // System.out.println("hhh:" + node.toString());
